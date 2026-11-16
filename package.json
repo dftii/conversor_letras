@@ -1,0 +1,10 @@
+{
+  "name": "generador-de-letras",
+  "version": "2.0.0",
+  "description": "Generador de nicks y textos con estilo Unicode en un único archivo HTML",
+  "private": true,
+  "scripts": {
+    "test": "node tests/estilos.test.js && node tests/csp.test.js",
+    "csp": "node tests/csp.test.js --fix"
+  }
+}
