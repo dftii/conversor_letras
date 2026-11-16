@@ -6,9 +6,9 @@ const path = require("path");
 const vm = require("vm");
 
 const html = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
-const scripts = html.match(/<script\b/g) || [];
 let fallos = 0;
 const fallo = msg => { fallos++; console.error("✗ " + msg); };
+const scripts = html.match(/<script\b/g) || [];
 if (scripts.length !== 1) fallo(`index.html debe tener un único <script> (tiene ${scripts.length})`);
 const ini = html.indexOf("<script>") + "<script>".length;
 const script = html.slice(ini, html.indexOf("</script>", ini));
@@ -18,78 +18,104 @@ function cargar(sinSegmenter = false) {
   const intl = sinSegmenter ? Object.assign({}, Intl, { Segmenter: undefined }) : Intl;
   const ctx = { Intl: intl, console };
   vm.createContext(ctx);
-  vm.runInContext(script + ";globalThis.__ = { ESTILOS, LETRAS, MARCOS, CATEGORIAS, contar, grafemas };", ctx);
+  vm.runInContext(script + ";globalThis.__ = { ESTILOS, MAYUSCULAS, CATEGORIAS_SIMBOLOS, contar, grafemas };", ctx);
   return ctx.__;
 }
 
-const { ESTILOS, LETRAS, MARCOS, CATEGORIAS, contar } = cargar();
-const porNombre = Object.fromEntries(ESTILOS.map(e => [e.nombre, e]));
+const { ESTILOS, MAYUSCULAS, CATEGORIAS_SIMBOLOS, contar } = cargar();
+const porId = Object.fromEntries(ESTILOS.map(e => [e.id, e]));
 const INVALIDO = /\p{Cn}|\p{Co}|\p{Cs}|�/u;
-const RTL = /\p{Script=Hebrew}|\p{Script=Arabic}/u;
 
-// Estructura
-if (ESTILOS.length !== 80) fallo(`Se esperaban 80 estilos y hay ${ESTILOS.length}`);
-const nombres = new Set(ESTILOS.map(e => e.nombre));
-if (nombres.size !== ESTILOS.length) fallo("Hay nombres de estilo repetidos");
-const cats = new Set(CATEGORIAS.map(c => c.id));
-for (const e of ESTILOS) if (!cats.has(e.categoria)) fallo(`${e.nombre}: categoría desconocida ${e.categoria}`);
-for (const m of MARCOS) if (!LETRAS[m.letra]) fallo(`Marco ${m.nombre}: letra inexistente ${m.letra}`);
+/* ---------- Estructura ---------- */
+if (ESTILOS.length < 20) fallo(`Se esperaban al menos 20 estilos y hay ${ESTILOS.length}`);
+for (const clave of ["id", "nombre"]) {
+  const valores = ESTILOS.map(e => e[clave]);
+  if (new Set(valores).size !== valores.length) fallo(`Hay estilos con el mismo ${clave}`);
+}
 if (/(src|href)\s*=\s*["']?https?:/i.test(html) || /@import|<link\b/i.test(html)) fallo("Hay recursos externos: debe funcionar sin conexión");
 
-// Todos los alfabetos convierten todas las letras salvo las que se dejan a propósito.
-const SIN_CAMBIO = {
-  versalitas: "xABCDEFGHIJKLMNOPQRSTUVWXYZ", griego: "JLMPQVXZ", ruso: "CDFGIJLQVZ",
-  cherokee: "EGIKOTY", moneda: "JQV", katakana: "w", superindice: "",
-};
+/* ---------- Cada estilo convierte todas las letras ---------- */
+// Letras que se quedan igual a propósito porque Unicode no tiene equivalente.
+const SIN_CAMBIO = { versalitas: "xABCDEFGHIJKLMNOPQRSTUVWXYZ" };
 const ABC = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-for (const [id, l] of Object.entries(LETRAS)) {
-  const igual = Array.from(ABC).filter(ch => l.fn(ch) === ch).join("");
-  const esperado = Array.from(ABC).filter(ch => (SIN_CAMBIO[id] || "").includes(ch)).join("");
-  if (igual !== esperado) fallo(`${l.nombre}: letras sin convertir «${igual}», se esperaba «${esperado}»`);
+for (const e of ESTILOS) {
+  const igual = Array.from(ABC).filter(ch => e.convertir(ch) === ch).join("");
+  const esperado = Array.from(ABC).filter(ch => (SIN_CAMBIO[e.id] || "").includes(ch)).join("");
+  if (igual !== esperado) fallo(`${e.nombre}: letras sin convertir «${igual}», se esperaba «${esperado}»`);
+  // Cada letra se convierte en un único carácter visible (sin «cosas raras» de varias piezas).
+  for (const ch of ABC) {
+    const v = e.convertir(ch);
+    if (contar(v) !== 1) fallo(`${e.nombre}: «${ch}» da «${v}», que no es un único carácter`);
+  }
 }
 
-// Propiedades con muchas entradas, también casos límite de Unicode.
+/* ---------- Propiedades con textos difíciles ---------- */
 const ENTRADAS = ["Peña", "Draco", "Ángel Muñoz 99", "xX_Pro_Xx", "ñandú ÑOÑO", "Việt", "Peña",
-  "a1️⃣b", "👨‍👩‍👧 Ana", "🇪🇸 Ok", "👍🏽 top", "Pro xy 2026", "cc 22", "straße"];
+  "a1️⃣b", "👨‍👩‍👧 Ana", "🇪🇸 Ok", "👍🏽 top", "straße", "0123456789"];
 for (const texto of ENTRADAS) {
   for (const e of ESTILOS) {
     let v;
     try { v = e.convertir(texto); } catch (err) { fallo(`${e.nombre}: lanza con «${texto}»: ${err.message}`); continue; }
     if (!v) fallo(`${e.nombre}: resultado vacío con «${texto}»`);
     if (INVALIDO.test(v)) fallo(`${e.nombre}: carácter inválido en «${v}»`);
-    if (RTL.test(v) && !RTL.test(texto)) fallo(`${e.nombre}: mete letras de derecha a izquierda en «${v}»`);
     if (e.convertir(texto) !== v) fallo(`${e.nombre}: no es determinista con «${texto}»`);
-    if (!e.nombre.startsWith("Glitch") && v !== v.normalize("NFC")) fallo(`${e.nombre}: salida no normalizada (NFC) con «${texto}»`);
+    if (v !== v.normalize("NFC")) fallo(`${e.nombre}: salida no normalizada (NFC) con «${texto}»`);
+    if (contar(v) !== contar(texto.normalize("NFC"))) fallo(`${e.nombre}: cambia el número de caracteres de «${texto}» («${v}»)`);
     for (const emoji of ["1️⃣", "👨‍👩‍👧", "🇪🇸", "👍🏽"]) {
       if (texto.includes(emoji) && !v.includes(emoji)) fallo(`${e.nombre}: rompe el emoji ${emoji} («${v}»)`);
     }
   }
 }
 
-// La ñ conserva su tilde (en «Al revés» pasa debajo a propósito).
+// La ñ conserva su tilde en todos los estilos.
 for (const e of ESTILOS) {
-  if (e.nombre === "Al revés") continue;
   if (!e.convertir("Peña").normalize("NFD").includes("̃")) fallo(`${e.nombre}: pierde la tilde de la ñ`);
 }
+// Valores concretos de referencia.
+const REF = { negrita: "𝐏𝐞𝐧̃𝐚", fraktur: "𝔓𝔢𝔫̃𝔞", doble: "ℙ𝕖𝕟̃𝕒", burbujas: "Ⓟⓔⓝ̃ⓐ", ancho: "Ｐｅｎ̃ａ" };
+for (const [id, v] of Object.entries(REF)) {
+  if (porId[id].convertir("Peña") !== v) fallo(`${porId[id].nombre}: «Peña» debería dar «${v}» y da «${porId[id].convertir("Peña")}»`);
+}
 
-// Casos concretos que fallaban
-if (contar(porNombre["Estilo japonés"].convertir("cc")) !== 2) fallo("Estilo japonés: «cc» debe contar 2");
-if (contar(porNombre["Al revés"].convertir("22")) !== 2) fallo("Al revés: «22» debe contar 2");
-if (porNombre["Alternas"].convertir("aß") !== "aß") fallo("Alternas: «aß» no debe cambiar de longitud");
-if (porNombre["Alternas"].convertir("nick") !== "nIcK") fallo("Alternas: «nick» debe dar «nIcK»");
-const caotico = porNombre["Glitch caótico"].convertir("Draco");
-if (/[̀́̓̈́]/.test(caotico)) fallo("Glitch: usa marcas obsoletas");
-if (contar(caotico) !== 5) fallo("Glitch caótico: debe contar 5 visibles");
+/* ---------- Mayúsculas ---------- */
+const casos = { mayus: ["peña straße", "PEÑA STRAßE"], minus: ["PEÑA", "peña"], titulo: ["hola mUNDO", "Hola Mundo"], original: ["PeÑa", "PeÑa"] };
+for (const [k, [entrada, salida]] of Object.entries(casos)) {
+  const r = MAYUSCULAS[k].fn(entrada);
+  if (r !== salida) fallo(`Mayúsculas «${k}»: «${entrada}» da «${r}», se esperaba «${salida}»`);
+}
 
-// Sin Intl.Segmenter el contador coincide en lo esencial.
+/* ---------- Símbolos ---------- */
+let total = 0;
+const idsCat = new Set();
+for (const c of CATEGORIAS_SIMBOLOS) {
+  if (idsCat.has(c.id)) fallo(`Categoría de símbolos repetida: ${c.id}`);
+  idsCat.add(c.id);
+  if (!c.nombre || !c.desc) fallo(`Categoría ${c.id} sin nombre o descripción`);
+  if (c.id !== "recientes" && c.simbolos.length < 8) fallo(`Categoría ${c.nombre}: solo ${c.simbolos.length} símbolos`);
+  if (new Set(c.simbolos).size !== c.simbolos.length) fallo(`Categoría ${c.nombre}: símbolos duplicados`);
+  for (const s of c.simbolos) {
+    if (INVALIDO.test(s) || /[\u0000-\u001F‪-‮⁦-⁩]/.test(s)) fallo(`${c.nombre}: símbolo inválido ${JSON.stringify(s)}`);
+    if (!c.anchos && contar(s) !== 1) fallo(`${c.nombre}: «${s}» no es un único símbolo`);
+    if (/\p{Script=Hebrew}|\p{Script=Arabic}/u.test(s)) fallo(`${c.nombre}: «${s}» se escribe de derecha a izquierda`);
+  }
+  total += c.simbolos.length;
+}
+if (total < 2000) fallo(`Se esperaban más de 2.000 símbolos y hay ${total}`);
+for (const id of ["populares", "recientes", "flechas", "estrellas", "monedas", "kaomoji"]) {
+  if (!idsCat.has(id)) fallo(`Falta la categoría de símbolos «${id}»`);
+}
+
+/* ---------- Sin Intl.Segmenter el contador coincide ---------- */
 const sin = cargar(true);
 for (const e of sin.ESTILOS) {
   for (const texto of ["Peña", "Draco", "👨‍👩‍👧 🇪🇸"]) {
-    const a = contar(porNombre[e.nombre].convertir(texto));
+    const a = contar(porId[e.id].convertir(texto));
     const b = sin.contar(e.convertir(texto));
     if (a !== b) fallo(`Sin Intl.Segmenter, ${e.nombre} con «${texto}» cuenta ${b} y debería ${a}`);
   }
 }
 
-console.log(fallos ? `\n${fallos} fallo(s)` : `✓ ${ESTILOS.length} estilos correctos (${ENTRADAS.length} entradas, con y sin Intl.Segmenter)`);
+console.log(fallos
+  ? `\n${fallos} fallo(s)`
+  : `✓ ${ESTILOS.length} estilos y ${total} símbolos en ${CATEGORIAS_SIMBOLOS.length} categorías correctos`);
 process.exit(fallos ? 1 : 0);

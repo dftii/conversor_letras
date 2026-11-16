@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-B4NTkGHo0q2JXGyMebP0JwzrgF2Ue+2XZzkWSFAvxrg='; style-src 'sha256-YtuhoWS5vL3r168YUBdwq1dJWg6T32yXyjWrg4Cwr+w='; img-src 'none'; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<title>Generador de Letras</title>
-<meta name="description" content="Crea nicks y textos con estilo para Free Fire, Fortnite, PUBG, Roblox, Minecraft, COD, Discord, Instagram y TikTok.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-S7UHFRCPERD7DP9tmSD5MNJr0QFUyg8WcHdafCeWd14='; style-src 'sha256-WkwCyFDEU7Q09UC3s0lYAogEOWhimr8CwLbUxqTcG5k='; img-src 'none'; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Generador de Letras y Símbolos</title>
+<meta name="description" content="Convierte tu texto en letras con estilo (negrita, cursiva, gótica, burbujas…) y copia miles de símbolos con un clic.">
 <style>
   :root {
     --bg: #0f0f14;
@@ -13,20 +13,19 @@
     --card-2: #23232f;
     --border: #2a2a3a;
     --text: #f2f2f7;
-    --muted: #9b9bb2;
+    --muted: #a3a3b8;
     --a1: #7c5cff;
     --a2: #00d4ff;
     --grad: linear-gradient(135deg, var(--a1), var(--a2));
+    --grad-btn: linear-gradient(135deg, #5a3df0, #0a7aa8);
     --shadow: 0 4px 18px rgba(0, 0, 0, .35);
     --glow: 0 10px 30px rgba(124, 92, 255, .30), 0 0 0 1px rgba(0, 212, 255, .25);
     --ok: #3ddc97;
     --warn: #ffc857;
     --bad: #ff6b8a;
-    --focus: 0 0 0 3px rgba(0, 212, 255, .55);
-    --focus-c: #00d4ff;
-    --grad-btn: linear-gradient(135deg, #5a3df0, #0a7aa8);
     --ok-bg: #0a7a4c;
-    --name-accent: #00d4ff;
+    --focus-c: #00d4ff;
+    --accent-text: #8fe9ff;
     --field-border: #4a4a62;
     --radius-card: 18px;
     --radius-input: 20px;
@@ -39,14 +38,14 @@
     --card-2: #eeeef6;
     --border: #e0e0ec;
     --text: #17171f;
-    --muted: #64647a;
+    --muted: #5d5d73;
     --shadow: 0 4px 16px rgba(20, 20, 50, .08);
     --glow: 0 10px 28px rgba(124, 92, 255, .22), 0 0 0 1px rgba(0, 212, 255, .35);
     --ok: #0b7a4f;
     --warn: #8a5a00;
     --bad: #c0224a;
     --focus-c: #5b3fe0;
-    --name-accent: #006f8f;
+    --accent-text: #006f8f;
     --field-border: #767690;
     color-scheme: light;
   }
@@ -59,25 +58,21 @@
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     line-height: 1.5;
     overflow-x: hidden;
-    transition: background .2s, color .2s;
   }
-  .wrap {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 40px 24px 80px;
-  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 36px 24px 72px; }
+  .narrow { max-width: 760px; margin: 0 auto; }
 
   /* Cabecera */
   header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }
   h1 {
     margin: 0;
-    font-size: clamp(1.9rem, 6vw, 2.6rem);
+    font-size: clamp(1.8rem, 5.5vw, 2.5rem);
     line-height: 1.1;
     letter-spacing: -.02em;
     background: var(--grad);
@@ -85,15 +80,17 @@
     background-clip: text;
     color: transparent;
   }
-  .sub {
-    margin: 8px 0 0;
+  .firma {
+    margin: 6px 0 0;
+    font-size: .8rem;
+    letter-spacing: .14em;
     color: var(--muted);
-    font-size: .98rem;
   }
+  .firma b { color: var(--accent-text); font-weight: 700; }
 
   /* Botones */
   button { font: inherit; color: inherit; cursor: pointer; }
-  button:focus-visible, input:focus-visible, .card:focus-visible {
+  button:focus-visible, input:focus-visible {
     outline: 3px solid var(--focus-c);
     outline-offset: 3px;
   }
@@ -108,25 +105,34 @@
     white-space: nowrap;
   }
   @media (hover: hover) {
-    .btn:hover { transform: translateY(-2px); box-shadow: var(--glow); }
-    .tab:hover { transform: translateY(-2px); color: var(--text); }
+    .btn:hover, .chip:hover, .tab:hover, .cat:hover { transform: translateY(-2px); box-shadow: var(--glow); }
     .card:hover { transform: translateY(-2px); box-shadow: var(--glow); }
+    .sym:hover { transform: translateY(-2px); box-shadow: var(--glow); border-color: var(--a1); }
   }
   .btn:active { transform: translateY(0); }
-  .btn-grad {
-    background: var(--grad-btn);
-    border-color: transparent;
-    color: #fff;
+  .btn-grad { background: var(--grad-btn); border-color: transparent; color: #fff; }
+  .theme-toggle { flex: none; width: 46px; height: 46px; padding: 0; display: grid; place-items: center; font-size: 1.2rem; }
+
+  /* Pestañas principales */
+  .main-tabs {
+    display: inline-flex;
+    gap: 6px;
+    padding: 6px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    margin-bottom: 24px;
   }
-  .theme-toggle {
-    flex: none;
-    width: 46px;
-    height: 46px;
-    padding: 0;
-    display: grid;
-    place-items: center;
-    font-size: 1.2rem;
+  .main-tab {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    padding: 10px 22px;
+    border-radius: var(--radius-pill);
+    font-weight: 700;
+    font-size: 1rem;
   }
+  .main-tab[aria-selected="true"] { background: var(--grad-btn); color: #fff; }
 
   /* Entrada */
   .input-box {
@@ -136,10 +142,7 @@
     padding: 14px;
     box-shadow: var(--shadow);
   }
-  .field {
-    position: relative;
-  }
-  #texto {
+  .campo {
     width: 100%;
     border: 2px solid var(--field-border);
     background: var(--card-2);
@@ -150,32 +153,42 @@
     font-weight: 600;
     transition: border-color .15s, box-shadow .15s;
   }
-  #texto::placeholder { color: var(--muted); font-weight: 500; }
-  #texto:focus {
-    outline: none;
-    border-color: var(--a1);
-    box-shadow: 0 0 0 4px rgba(124, 92, 255, .22);
-  }
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 12px;
-  }
-  .actions .spacer { flex: 1; }
-  .hint {
-    margin: 12px 4px 0;
-    font-size: .85rem;
-    color: var(--muted);
-  }
+  .campo::placeholder { color: var(--muted); font-weight: 500; }
+  .campo:focus { outline: none; border-color: var(--a1); box-shadow: 0 0 0 4px rgba(124, 92, 255, .22); }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+  .hint { margin: 12px 4px 0; font-size: .85rem; color: var(--muted); }
 
-  /* Pestañas */
-  .tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 28px 0 8px;
+  /* Herramientas */
+  .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 18px; }
+  .search {
+    flex: 1 1 220px;
+    min-width: 0;
+    border: 2px solid var(--field-border);
+    background: var(--card);
+    color: var(--text);
+    border-radius: var(--radius-pill);
+    padding: 10px 18px;
+    font: inherit;
   }
+  .search::placeholder { color: var(--muted); }
+  .grupo { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: .88rem; color: var(--muted); border: 0; margin: 0; padding: 0; }
+  .grupo legend { float: left; margin-right: 4px; padding: 0; }
+  .chip {
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    border-radius: var(--radius-pill);
+    padding: 6px 12px;
+    min-height: 36px;
+    font-weight: 600;
+    font-size: .88rem;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .chip[aria-pressed="true"] { background: var(--grad-btn); color: #fff; border-color: transparent; }
+  .note { font-size: .82rem; color: var(--muted); margin: 8px 4px 0; }
+
+  /* Filtros de la lista */
+  .tabs { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 14px; }
   .tab {
     position: relative;
     border: 1px solid var(--border);
@@ -185,22 +198,13 @@
     border-radius: var(--radius-pill);
     font-size: .92rem;
     font-weight: 600;
-    transition: transform .15s, box-shadow .15s, color .15s;
+    transition: transform .15s, box-shadow .15s;
   }
-  .tab[aria-selected="true"] {
-    background: var(--grad-btn);
-    color: #fff;
-    border-color: transparent;
-    box-shadow: var(--glow);
-  }
+  .tab[aria-selected="true"] { background: var(--grad-btn); color: #fff; border-color: transparent; }
   .tab .num { font-weight: 500; margin-left: 4px; }
 
-  /* Tarjetas */
-  .list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
+  /* Tarjetas de estilos */
+  .list { display: flex; flex-direction: column; gap: 12px; }
   .card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -208,41 +212,22 @@
     padding: 14px 16px 16px 20px;
     box-shadow: var(--shadow);
     cursor: pointer;
-    transition: transform .15s, box-shadow .15s, border-color .15s;
+    transition: transform .15s, box-shadow .15s;
     min-width: 0;
   }
-  .card[hidden] { display: none; }
-  .card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 6px;
-  }
-  .name {
-    font-size: .8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    color: var(--muted);
-    overflow-wrap: anywhere;
-  }
-  .count {
-    flex: none;
-    font-size: .75rem;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: var(--radius-pill);
-    background: var(--card-2);
-  }
+  .card-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; margin-bottom: 6px; }
+  .name { min-width: 0; font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .top-right { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+  .count { flex: none; font-size: .75rem; font-weight: 700; padding: 3px 10px; border-radius: var(--radius-pill); background: var(--card-2); }
   .count.ok { color: var(--ok); }
   .count.warn { color: var(--warn); }
   .count.bad { color: var(--bad); }
-  .card-body {
-    display: flex;
-    align-items: center;
-    gap: 14px;
+  .fav {
+    flex: none; border: 0; background: transparent; font-size: 1.15rem; line-height: 1;
+    padding: 6px; min-width: 36px; min-height: 36px; border-radius: var(--radius-pill); color: var(--muted);
   }
+  .fav[aria-pressed="true"] { color: #f5b400; }
+  .card-body { display: flex; align-items: center; gap: 14px; }
   .result {
     flex: 1;
     min-width: 0;
@@ -251,30 +236,72 @@
     padding: 6px 0;
     overflow-wrap: anywhere;
     word-break: break-word;
-    overflow: visible;
-    font-family: system-ui, -apple-system, "Segoe UI", "Segoe UI Symbol", "Segoe UI Emoji", "Noto Sans", "Noto Sans Symbols", "Noto Sans Symbols 2", "Noto Sans Math", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    font-family: system-ui, -apple-system, "Segoe UI", "Segoe UI Symbol", "Noto Sans", "Noto Sans Symbols", "Noto Sans Symbols 2", "Noto Sans Math", "Cambria Math", "STIX Two Math", sans-serif;
   }
-  .copy {
-    flex: none;
-    min-width: 116px;
-  }
-  .copy.done {
-    background: var(--ok-bg);
-    color: #fff;
-    border-color: transparent;
-  }
+  .copy { flex: none; min-width: 116px; }
+  .copy.done { background: var(--ok-bg); color: #fff; border-color: transparent; }
+  .empty { text-align: center; color: var(--muted); padding: 24px 0; }
 
-  /* Aleatorio */
-  .random-card {
-    margin-top: 20px;
-    border: 2px solid transparent;
-    background:
-      linear-gradient(var(--card), var(--card)) padding-box,
-      var(--grad) border-box;
+  /* Símbolos */
+  .sym-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 24px; align-items: start; margin-top: 20px; }
+  .cats {
+    position: sticky;
+    top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 8px;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
   }
-  .random-card .name { color: var(--name-accent); }
+  .cat {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    padding: 9px 12px;
+    border-radius: 12px;
+    font-size: .93rem;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .cat .num { color: var(--muted); font-size: .8rem; }
+  .cat[aria-selected="true"] { background: var(--grad-btn); color: #fff; }
+  .cat[aria-selected="true"] .num { color: #fff; }
+  .sym-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+  .sym-head h2 { margin: 0; font-size: 1.5rem; }
+  .sym-desc { margin: 0 0 14px; color: var(--muted); font-size: .9rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 8px; }
+  .grid.anchos { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .sym {
+    height: 52px;
+    min-width: 0;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    border-radius: 12px;
+    font-size: 1.5rem;
+    line-height: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    font-variant-emoji: text;
+    font-family: "Segoe UI Symbol", "Noto Sans Symbols", "Noto Sans Symbols 2", "Noto Sans Math", "Apple Symbols", "DejaVu Sans", system-ui, sans-serif;
+    transition: transform .12s, box-shadow .12s, border-color .12s;
+  }
+  .grid.anchos .sym { font-size: 1.05rem; padding: 0 10px; }
+  .sym.copiado { border-color: var(--ok); box-shadow: 0 0 0 2px var(--ok); }
+  .compose { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .compose .campo { flex: 1 1 260px; width: auto; min-width: 0; font-size: 1.15rem; padding: 12px 18px; }
 
-  /* Toast */
   .toast {
     position: fixed;
     left: 50%;
@@ -296,109 +323,40 @@
   }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-  footer {
-    margin-top: 40px;
-    text-align: center;
-    color: var(--muted);
-    font-size: .82rem;
-  }
-
+  footer { margin-top: 48px; text-align: center; color: var(--muted); font-size: .82rem; }
+  footer p { margin: 4px 0; }
   .sr-only {
-    position: absolute;
-    width: 1px; height: 1px;
-    padding: 0; margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
   }
-
-  /* Herramientas: buscador y límite */
-  .tools {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px 16px;
-    margin-top: 24px;
-  }
-  .search {
-    flex: 1 1 220px;
-    min-width: 0;
-    border: 2px solid var(--field-border);
-    background: var(--card);
-    color: var(--text);
-    border-radius: var(--radius-pill);
-    padding: 10px 18px;
-    font: inherit;
-  }
-  .search::placeholder { color: var(--muted); }
-  .limit {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
-    font-size: .88rem;
-    color: var(--muted);
-    border: 0;
-    margin: 0;
-    padding: 0;
-  }
-  .limit legend { float: left; margin-right: 4px; padding: 0; }
-  .chip {
-    border: 1px solid var(--border);
-    background: var(--card);
-    color: var(--text);
-    border-radius: var(--radius-pill);
-    padding: 6px 12px;
-    min-height: 36px;
-    font-weight: 600;
-    font-size: .88rem;
-  }
-  .chip[aria-pressed="true"] {
-    background: var(--grad-btn);
-    color: #fff;
-    border-color: transparent;
-  }
-  .card[data-cat="efectos"] .result { padding: .7em 0; }
-  .fav {
-    flex: none;
-    border: 0;
-    background: transparent;
-    font-size: 1.15rem;
-    line-height: 1;
-    padding: 6px;
-    min-width: 36px;
-    min-height: 36px;
-    border-radius: var(--radius-pill);
-    color: var(--muted);
-  }
-  .fav[aria-pressed="true"] { color: #f5b400; }
-  .card-top { flex-wrap: wrap; }
-  .name { min-width: 0; }
-  .top-right { display: flex; align-items: center; gap: 6px; margin-left: auto; }
-  .empty { text-align: center; color: var(--muted); padding: 24px 0; }
-  .note { font-size: .82rem; color: var(--muted); margin: 6px 4px 0; }
+  [hidden] { display: none !important; }
 
   @media (forced-colors: active) {
-    button:focus-visible, input:focus-visible, .card:focus-visible { outline-color: Highlight; }
-    .tab[aria-selected="true"], .chip[aria-pressed="true"] {
-      forced-color-adjust: none;
-      background: Highlight;
-      color: HighlightText;
-      border-color: Highlight;
+    button:focus-visible, input:focus-visible { outline-color: Highlight; }
+    .tab[aria-selected="true"], .chip[aria-pressed="true"], .main-tab[aria-selected="true"], .cat[aria-selected="true"] {
+      forced-color-adjust: none; background: Highlight; color: HighlightText; border-color: Highlight;
     }
   }
-
+  @media (max-width: 760px) {
+    .sym-layout { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+    .cats { position: static; flex-direction: row; overflow-x: auto; max-height: none; padding: 6px; }
+    .cat { flex: none; }
+    .cat .num { display: none; }
+  }
   @media (max-width: 560px) {
-    .wrap { padding: 24px 16px 64px; }
-    .tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; padding-bottom: 6px; }
+    .wrap { padding: 22px 16px 64px; }
+    .main-tabs { display: flex; }
+    .main-tab { flex: 1; }
+    .tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; }
     .tab { flex: none; }
     .card { padding: 12px 14px 14px; }
     .card-body { flex-direction: column; align-items: stretch; gap: 8px; }
     .copy { width: 100%; }
     .result { font-size: 1.35rem; }
-    .actions .btn { flex: 1 1 auto; }
-    .actions .spacer { display: none; }
+    .actions .btn, .compose .btn { flex: 1 1 auto; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 6px; }
+    .sym { height: 46px; font-size: 1.35rem; }
+    .grid.anchos { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { transition: none !important; }
@@ -407,60 +365,92 @@
 </head>
 <body>
 <main class="wrap">
-  <noscript><p class="empty">Esta página necesita JavaScript para generar los estilos.</p></noscript>
+  <noscript><p class="empty">Esta página necesita JavaScript.</p></noscript>
   <header>
     <div>
       <h1>Generador de Letras</h1>
-      <p class="sub">Nicks y textos con estilo para Free Fire, Fortnite, PUBG, Roblox, Minecraft, COD, Discord, Instagram y TikTok.</p>
+      <p class="firma">dsgnd by <b>dfti</b></p>
     </div>
     <button class="btn theme-toggle" id="tema" type="button" aria-label="Cambiar a modo claro" title="Cambiar tema">☀️</button>
   </header>
 
-  <section class="input-box" aria-label="Texto a convertir">
-    <div class="field">
-      <label for="texto" class="sr-only">Tu nick o texto</label>
-      <input id="texto" type="text" placeholder="Escribe tu nick…" maxlength="80" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" translate="no">
+  <div class="main-tabs" role="tablist" aria-label="Secciones" id="secciones">
+    <button class="main-tab" role="tab" type="button" id="sec-letras" aria-controls="panel-letras" aria-selected="true">Aa Letras</button>
+    <button class="main-tab" role="tab" type="button" id="sec-simbolos" aria-controls="panel-simbolos" aria-selected="false" tabindex="-1">★ Símbolos</button>
+  </div>
+
+  <!-- ============ LETRAS ============ -->
+  <section id="panel-letras" role="tabpanel" aria-labelledby="sec-letras">
+    <div class="narrow">
+      <div class="input-box">
+        <label for="texto" class="sr-only">Tu texto</label>
+        <input id="texto" class="campo" type="text" placeholder="Escribe tu texto…" maxlength="80" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" translate="no">
+        <div class="actions">
+          <button class="btn" id="pegar" type="button" aria-label="Pegar texto desde el portapapeles">📋 Pegar</button>
+          <button class="btn" id="borrar" type="button" aria-label="Borrar el texto">✕ Borrar</button>
+          <button class="btn" id="compartir" type="button" aria-label="Compartir: copia un enlace con tu texto">🔗 Compartir</button>
+        </div>
+        <p class="hint" id="hint">Vista previa con «Draco». Escribe para verlo con estilo.</p>
+      </div>
+
+      <div class="tools">
+        <label for="buscar" class="sr-only">Buscar estilo</label>
+        <input id="buscar" class="search" type="search" placeholder="🔍 Buscar estilo (negrita, gótica…)" autocomplete="off">
+        <fieldset class="grupo" id="mayus">
+          <legend>Mayúsculas:</legend>
+        </fieldset>
+      </div>
+      <div class="tools">
+        <fieldset class="grupo" id="limite">
+          <legend>Límite de caracteres:</legend>
+        </fieldset>
+      </div>
+      <p class="note">Cada estilo muestra las letras que ves y las <b>unidades</b> que ocupa de verdad (muchos juegos y redes cuentan así): <b>✓</b> cabe · <b>⚠</b> se ve corto, pero ocupa más · <b>✕</b> demasiado largo.</p>
+
+      <div class="tabs" role="tablist" aria-label="Filtrar estilos" id="tabs"></div>
+      <div class="list" id="lista" role="tabpanel" aria-labelledby="tab-todos" translate="no"></div>
+      <p class="empty" id="vacio" hidden>No hay estilos que coincidan.</p>
     </div>
-    <div class="actions">
-      <button class="btn" id="pegar" type="button" aria-label="Pegar texto desde el portapapeles">📋 Pegar</button>
-      <button class="btn" id="borrar" type="button" aria-label="Borrar el texto">✕ Borrar</button>
-      <button class="btn" id="compartir" type="button" aria-label="Compartir: copia un enlace con tu texto">🔗 Compartir</button>
-      <span class="spacer"></span>
-      <button class="btn btn-grad" id="aleatorio" type="button" aria-label="Aleatorio: combina al azar un marco y un estilo de letra">🎲 Aleatorio</button>
-    </div>
-    <p class="hint" id="hint">Vista previa con «Draco». Escribe tu nombre para verlo con estilo.</p>
   </section>
 
-  <article class="card random-card" id="randomCard" hidden aria-labelledby="randomName">
-    <div class="card-top">
-      <span class="name" id="randomName"></span>
-      <span class="count" id="randomCount"></span>
+  <!-- ============ SÍMBOLOS ============ -->
+  <section id="panel-simbolos" role="tabpanel" aria-labelledby="sec-simbolos" hidden>
+    <div class="input-box">
+      <div class="compose">
+        <label for="mitexto" class="sr-only">Tu texto con símbolos</label>
+        <input id="mitexto" class="campo" type="text" placeholder="Tu texto con símbolos…" autocomplete="off" spellcheck="false" translate="no">
+        <button class="btn btn-grad" id="copiarTexto" type="button">Copiar texto</button>
+        <button class="btn" id="borrarTexto" type="button" aria-label="Borrar el texto con símbolos">✕ Borrar</button>
+      </div>
+      <div class="tools">
+        <fieldset class="grupo" id="modo">
+          <legend>Al pulsar un símbolo:</legend>
+        </fieldset>
+        <label for="buscarCat" class="sr-only">Buscar categoría</label>
+        <input id="buscarCat" class="search" type="search" placeholder="🔍 Buscar categoría (flechas, estrellas…)" autocomplete="off">
+      </div>
     </div>
-    <div class="card-body">
-      <div class="result" id="randomResult" translate="no"></div>
-      <button class="btn copy btn-grad" id="randomCopy" type="button" aria-label="Copiar la combinación aleatoria">Copiar</button>
+
+    <div class="sym-layout">
+      <nav aria-label="Categorías de símbolos">
+        <div class="cats" id="cats" role="tablist" aria-orientation="vertical"></div>
+      </nav>
+      <div id="panelSym" role="tabpanel" aria-labelledby="cat-populares">
+        <div class="sym-head">
+          <h2 id="symTitulo"></h2>
+          <span class="note" id="symNum"></span>
+        </div>
+        <p class="sym-desc" id="symDesc"></p>
+        <div class="grid" id="grid" translate="no"></div>
+        <p class="empty" id="symVacio" hidden></p>
+      </div>
     </div>
-  </article>
-
-  <div class="tools">
-    <label for="buscar" class="sr-only">Buscar estilo</label>
-    <input id="buscar" class="search" type="search" placeholder="🔍 Buscar estilo (glitch, corona, griego…)" autocomplete="off">
-    <fieldset class="limit" id="limite">
-      <legend>Límite de tu juego:</legend>
-    </fieldset>
-  </div>
-  <p class="note">El medidor compara cada resultado con ese límite. «Visibles» son las letras que ves; «unidades» es lo que ocupan de verdad, y muchos juegos cuentan así: <b>✓</b> cabe · <b>⚠</b> se ve corto, pero ocupa más de lo permitido · <b>✕</b> demasiado largo.</p>
-
-  <nav aria-label="Categorías">
-    <div class="tabs" role="tablist" aria-label="Categorías de estilos" id="tabs"></div>
-  </nav>
-
-  <div class="list" id="lista" role="tabpanel" aria-labelledby="tab-todos" translate="no"></div>
-  <p class="empty" id="vacio" hidden>No hay estilos que coincidan.</p>
+  </section>
 
   <footer>
-    <p>Toca cualquier tarjeta para copiar su texto.</p>
-    <p>Algunos juegos y redes recortan o rechazan los símbolos especiales: pruébalo antes. No uses nombres que imiten a otras personas o a la moderación.</p>
+    <p>Toca cualquier estilo o símbolo para copiarlo.</p>
+    <p>Algunos juegos y redes no admiten ciertos caracteres especiales: pruébalo antes de usarlo.</p>
+    <p>dsgnd by <b>dfti</b> · Licencia MIT</p>
   </footer>
 </main>
 
@@ -474,8 +464,6 @@
    Utilidades de Unicode
    ========================================================= */
 const ES_MARCA = /\p{M}/u;
-const ES_LETRA = /\p{L}/u;
-const ES_ESPACIO = /^[\s\u3164]+$/u; // U+3164: el «espacio invisible» de muchos juegos
 
 const segmentador = (typeof Intl !== "undefined" && Intl.Segmenter)
   ? new Intl.Segmenter("es", { granularity: "grapheme" })
@@ -518,7 +506,7 @@ function unidades(texto) {
 }
 
 // Grafemas que no se tocan: emoji, banderas y teclas (1️⃣).
-const ES_EMOJI = /\p{Extended_Pictographic}|\p{Regional_Indicator}|⃣|️/u;
+const ES_EMOJI = /\p{Extended_Pictographic}|\p{Regional_Indicator}|\u20E3|\uFE0F/u;
 
 /**
  * Crea un conversor letra a letra.
@@ -554,14 +542,16 @@ function matematico(mayus, minus, digitos, huecos = {}) {
   });
 }
 
-/** Alfabeto de sustitución de 26 letras (sin distinguir mayúsculas). */
-function sustitucion(alfabeto, digitos) {
-  const letras = Array.from(alfabeto);
-  const nums = digitos ? Array.from(digitos) : null;
-  if (letras.length !== 26) throw new Error("Alfabeto incompleto: " + alfabeto);
+/**
+ * Letras encerradas. `minus` = null usa las mayúsculas también para las minúsculas
+ * (y `mayus` = null, las minúsculas para las mayúsculas). `digitos` es una lista 0-9.
+ */
+function encerrado(mayus, minus, digitos) {
   return mapeador(ch => {
-    if (/^[a-z]$/i.test(ch)) return letras[ch.toLowerCase().charCodeAt(0) - 97];
-    if (nums && /^[0-9]$/.test(ch)) return nums[+ch];
+    const c = ch.codePointAt(0);
+    if (c >= 65 && c <= 90) return String.fromCodePoint((mayus || minus) + c - 65);
+    if (c >= 97 && c <= 122) return String.fromCodePoint((minus || mayus) + c - 97);
+    if (c >= 48 && c <= 57 && digitos) return digitos[c - 48] || null;
     return null;
   });
 }
@@ -578,297 +568,153 @@ function zip(origen, destino) {
 }
 
 /* =========================================================
-   Estilos de letra (reutilizables por los marcos)
+   Estilos de letra
    ========================================================= */
 const MIN = "abcdefghijklmnopqrstuvwxyz";
 const MAY = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const HUECOS_SCRIPT = { B: "ℬ", E: "ℰ", F: "ℱ", H: "ℋ", I: "ℐ", L: "ℒ", M: "ℳ", R: "ℛ", e: "ℯ", g: "ℊ", o: "ℴ" };
+const HUECOS_FRAKTUR = { C: "ℭ", H: "ℌ", I: "ℑ", R: "ℜ", Z: "ℨ" };
+const HUECOS_DOBLE = { C: "ℂ", H: "ℍ", N: "ℕ", P: "ℙ", Q: "ℚ", R: "ℝ", Z: "ℤ" };
 
-const LETRAS = {
-  negrita:        { nombre: "Negrita",             fn: matematico(0x1D400, 0x1D41A, 0x1D7CE) },
-  cursiva:        { nombre: "Cursiva",             fn: matematico(0x1D434, 0x1D44E, null, { h: "ℎ" }) },
-  cursivaNegrita: { nombre: "Cursiva negrita",     fn: matematico(0x1D468, 0x1D482, null) },
-  script:         { nombre: "Caligráfica",         fn: matematico(0x1D49C, 0x1D4B6, null, {
-                      B: "ℬ", E: "ℰ", F: "ℱ", H: "ℋ", I: "ℐ", L: "ℒ", M: "ℳ", R: "ℛ",
-                      e: "ℯ", g: "ℊ", o: "ℴ" }) },
-  scriptNegrita:  { nombre: "Caligráfica negrita", fn: matematico(0x1D4D0, 0x1D4EA, null) },
-  fraktur:        { nombre: "Fraktur",             fn: matematico(0x1D504, 0x1D51E, null, {
-                      C: "ℭ", H: "ℌ", I: "ℑ", R: "ℜ", Z: "ℨ" }) },
-  frakturNegrita: { nombre: "Fraktur negrita",     fn: matematico(0x1D56C, 0x1D586, null) },
-  doble:          { nombre: "Doble trazo",         fn: matematico(0x1D538, 0x1D552, 0x1D7D8, {
-                      C: "ℂ", H: "ℍ", N: "ℕ", P: "ℙ", Q: "ℚ", R: "ℝ", Z: "ℤ" }) },
-  sans:           { nombre: "Sin serifa",          fn: matematico(0x1D5A0, 0x1D5BA, 0x1D7E2) },
-  sansNegrita:    { nombre: "Negrita sin serifa",  fn: matematico(0x1D5D4, 0x1D5EE, 0x1D7EC) },
-  sansCursiva:    { nombre: "Cursiva sin serifa",  fn: matematico(0x1D608, 0x1D622, null) },
-  mono:           { nombre: "Monoespaciada",       fn: matematico(0x1D670, 0x1D68A, 0x1D7F6) },
-
-  burbujas: { nombre: "Burbujas", fn: mapeador(ch => {
-    const c = ch.codePointAt(0);
-    if (c >= 65 && c <= 90) return String.fromCodePoint(0x24B6 + c - 65);
-    if (c >= 97 && c <= 122) return String.fromCodePoint(0x24D0 + c - 97);
-    if (ch === "0") return "⓪";
-    if (c >= 49 && c <= 57) return String.fromCodePoint(0x2460 + c - 49);
-    return null;
-  }) },
-  burbujasNegras: { nombre: "Burbujas negras", fn: mapeador(ch => {
-    const c = ch.codePointAt(0);
-    if (c >= 65 && c <= 90) return String.fromCodePoint(0x1F150 + c - 65);
-    if (c >= 97 && c <= 122) return String.fromCodePoint(0x1F150 + c - 97);
-    if (ch === "0") return "⓿";
-    if (c >= 49 && c <= 57) return String.fromCodePoint(0x2776 + c - 49);
-    return null;
-  }) },
-  cuadrados: { nombre: "Cuadrados", fn: mapeador(ch => {
-    const c = ch.codePointAt(0);
-    if (c >= 65 && c <= 90) return String.fromCodePoint(0x1F130 + c - 65);
-    if (c >= 97 && c <= 122) return String.fromCodePoint(0x1F130 + c - 97);
-    return null;
-  }) },
-  cuadradosNegros: { nombre: "Cuadrados negros", fn: mapeador(ch => {
-    const c = ch.codePointAt(0);
-    if (c >= 65 && c <= 90) return String.fromCodePoint(0x1F170 + c - 65);
-    if (c >= 97 && c <= 122) return String.fromCodePoint(0x1F170 + c - 97);
-    return null;
-  }) },
-  ancho: { nombre: "Ancho completo", fn: mapeador(ch => {
-    const c = ch.codePointAt(0);
-    if (c === 32) return "　";
-    if (c >= 0x21 && c <= 0x7E) return String.fromCodePoint(c + 0xFEE0);
-    return null;
-  }) },
-  versalitas: { nombre: "Versalitas", fn: tabla(zip(MIN, "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀꜱᴛᴜᴠᴡxʏᴢ")) },
-  superindice: { nombre: "Superíndice", fn: tabla(Object.assign(
-    zip(MIN, "ᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᵒᵖᑫʳˢᵗᵘᵛʷˣʸᶻ"),
-    zip(MAY, "ᴬᴮᶜᴰᴱᶠᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾᑫᴿˢᵀᵁⱽᵂˣʸᶻ"),
-    zip("0123456789+-=()", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾")
-  )) },
-
-  // Letras raras (sustitución por caracteres parecidos)
-  asiatico: { nombre: "Asiático",         fn: sustitucion("卂乃匚刀乇下厶卄工丁长乚从𠘨口尸㔿尺丂丅凵リ山乂丫乙") },
-  katakana: { nombre: "Estilo japonés",   fn: sustitucion("ﾑ乃ㄷりεｷムんﾉﾌズﾚﾶ刀のｱゐ尺丂ｲひ√wﾒﾘ乙") },
-  griego:   { nombre: "Griego mixto",         fn: sustitucion("ΛßƇĐΣƑǤΉƗJҜLMИӨPQЯƧƬЦVЩXΨZ") },
-  ruso:     { nombre: "Ruso falso",       fn: sustitucion("ДБCDЁFGНIJКLМИОРQЯЅГЦVШХЧZ") },
-  tailandes:{ nombre: "Tailandés mixto",  fn: sustitucion("ค๒ς๔єŦցђเʝкɭ๓ภ๏ρợгรՇยѵฬχɣչ") },
-  runico:   { nombre: "Rúnico medieval",  fn: sustitucion("ᚨᛒᚲᛞᛖᚠᚷᚺᛁᛃᚴᛚᛗᚾᛟᛈᛩᚱᛊᛏᚢᚡᚹᛪᚤᛉ") },
-  cherokee: { nombre: "Silabario canadiense",       fn: sustitucion("ᗩᗷᑕᗪEᖴGᕼIᒍKᒪᗰᑎOᑭᑫᖇᔕTᑌᐯᗯ᙭Yᘔ") },
-  etiope:   { nombre: "Etíope",           fn: sustitucion("ልጌርዕቿቻኗዘጎጋጕረጠክዐየዒዪነፕሁሀሠሸሃጊ") },
-  moneda:   { nombre: "Moneda",           fn: sustitucion("₳฿₵ĐɆ₣₲ⱧłJ₭Ⱡ₥₦Ø₱QⱤ₴₮ɄV₩ӾɎⱫ") },
-};
-
-/* =========================================================
-   Efectos
-   ========================================================= */
-
-// Generador pseudoaleatorio con semilla (mulberry32) y hash FNV-1a del texto.
-function hashTexto(t) {
-  let h = 0x811C9DC5;
-  for (const ch of Array.from(t)) {
-    h ^= ch.codePointAt(0);
-    h = Math.imul(h, 0x01000193) >>> 0;
-  }
-  return h >>> 0;
-}
-function prng(semilla) {
-  let a = semilla >>> 0;
-  return () => {
-    a = (a + 0x6D2B79F5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-function rango(...tramos) {
-  const out = [];
-  for (const [a, b] of tramos) for (let c = a; c <= b; c++) out.push(String.fromCodePoint(c));
-  return out;
-}
-const ZALGO_ARRIBA = rango([0x0300, 0x0315], [0x033D, 0x033F], [0x0342, 0x0342], [0x0346, 0x0346], [0x034A, 0x034C],
-                           [0x0350, 0x0352], [0x0357, 0x0357], [0x035B, 0x035B], [0x0363, 0x036F]);
-const ZALGO_ABAJO  = rango([0x0316, 0x0319], [0x031C, 0x0333], [0x0339, 0x033C], [0x0345, 0x0345],
-                           [0x0347, 0x0349], [0x034D, 0x034E], [0x0353, 0x0356], [0x0359, 0x035A]);
-const ZALGO_MEDIO  = rango([0x0334, 0x0338]);
-
-const ZALGO_NIVELES = {
-  suave:   { arriba: [1, 1], abajo: [0, 1], medio: [0, 0] },
-  medio:   { arriba: [2, 3], abajo: [1, 2], medio: [0, 1] },
-  caotico: { arriba: [4, 8], abajo: [3, 6], medio: [1, 2] },
-};
-
-function zalgo(nivel) {
-  const cfg = ZALGO_NIVELES[nivel];
-  return texto => {
-    const t = texto.normalize("NFC");
-    const rnd = prng(hashTexto(nivel + "|" + t));
-    const entre = ([a, b]) => a + Math.floor(rnd() * (b - a + 1));
-    const elegir = lista => lista[Math.floor(rnd() * lista.length)];
-    let out = "";
-    for (const g of grafemas(t)) {
-      out += g;
-      if (ES_ESPACIO.test(g) || ES_EMOJI.test(g)) continue;
-      for (let i = entre(cfg.arriba); i > 0; i--) out += elegir(ZALGO_ARRIBA);
-      for (let i = entre(cfg.medio); i > 0; i--) out += elegir(ZALGO_MEDIO);
-      for (let i = entre(cfg.abajo); i > 0; i--) out += elegir(ZALGO_ABAJO);
-    }
-    return out;
-  };
-}
-
-// Al revés (girado 180°)
-const GIRO = Object.assign(
-  zip(MIN, "ɐqɔpǝɟƃɥᴉɾʞlɯuodbɹsʇnʌʍxʎz"),
-  zip(MAY, "∀ᗺƆᗡƎℲ⅁HIſʞ˥WNOԀΌᴚS⊥∩ΛMX⅄Z"),
-  zip("0123456789", "0ƖㄹƐㄣϛ9ㄥ86"),
-  { ".": "˙", ",": "'", "'": ",", "?": "¿", "¿": "?", "!": "¡", "¡": "!",
-    "(": ")", ")": "(", "[": "]", "]": "[", "{": "}", "}": "{", "<": ">", ">": "<",
-    "_": "‾", "&": "⅋", '"': "„", ";": "⁏" }
-);
-// Las marcas de arriba pasan a estar debajo (la ñ sigue siendo reconocible).
-const GIRO_MARCAS = {
-  "̀": "̖", "́": "̗", "̃": "̰",
-  "̈": "̤", "̂": "̭", "̌": "̬", "̧": "̑",
-};
-
-const ESPEJO = Object.assign(
-  zip(MIN, "ɒdɔbɘʇϱʜiįʞlmnoqpɿƨƚuvwxγƹ"),
-  zip(MAY, "AᙠƆᗡƎᖷGHIႱK⅃MИOᑫQЯƧTUVWXYƸ"),
-  { "3": "Ɛ", "(": ")", ")": "(", "[": "]", "]": "[", "{": "}", "}": "{",
-    "<": ">", ">": "<", "?": "⸮", "/": "\\", "\\": "/" }
-);
-
-function invertir(mapaBase, mapaMarcas) {
-  return texto => grafemas(texto.normalize("NFC")).map(g => {
-    if (ES_EMOJI.test(g)) return g;
-    return Array.from(g.normalize("NFD")).map(ch => {
-      if (ES_MARCA.test(ch)) return (mapaMarcas && mapaMarcas[ch]) || ch;
-      return Object.prototype.hasOwnProperty.call(mapaBase, ch) ? mapaBase[ch] : ch;
-    }).join("");
-  }).reverse().join("").normalize("NFC");
-}
-
-function conMarca(marca) {
-  return texto => grafemas(texto.normalize("NFC"))
-    .map(g => (ES_ESPACIO.test(g) || ES_EMOJI.test(g) ? g : g + marca)).join("").normalize("NFC");
-}
-
-/** Une los grafemas de cada palabra con un separador. */
-function entreLetras(sep, borde = false, sepPalabras = null) {
-  return texto => {
-    const partes = texto.normalize("NFC").split(/(\s+)/u);
-    return partes.map(p => {
-      if (p === "") return "";
-      if (ES_ESPACIO.test(p)) return sepPalabras != null ? sepPalabras : p;
-      const g = grafemas(p).join(sep);
-      return borde ? sep + g + sep : g;
-    }).join("");
-  };
-}
-
-function alternas(texto) {
-  let i = 0;
-  return grafemas(texto.normalize("NFC")).map(g => {
-    if (!ES_LETRA.test(g)) return g;
-    const r = (i++ % 2 === 0) ? g.toLowerCase() : g.toUpperCase();
-    // ß → SS o ﬁ → FI cambiarían la longitud del nick: se deja igual.
-    return grafemas(r).length === 1 && r.length === g.length ? r : g;
-  }).join("");
-}
-
-/* =========================================================
-   Marcos decorativos { antes, despues, letra }
-   ========================================================= */
-const MARCOS = [
-  // Gamer / Nicks
-  { nombre: "Leyenda",             categoria: "gamer", antes: "꧁༒☬", despues: "☬༒꧂", letra: "frakturNegrita" },
-  { nombre: "Clásico real",        categoria: "gamer", antes: "꧁", despues: "꧂", letra: "scriptNegrita" },
-  { nombre: "Estrella fugaz",      categoria: "gamer", antes: "★彡", despues: "彡★", letra: "negrita" },
-  { nombre: "Comillas japonesas",  categoria: "gamer", antes: "『", despues: "』", letra: "doble" },
-  { nombre: "Lenticular",          categoria: "gamer", antes: "【", despues: "】", letra: "ancho" },
-  { nombre: "Escudo",              categoria: "gamer", antes: "〖", despues: "〗", letra: "fraktur" },
-  { nombre: "Clan 亗",             categoria: "gamer", antes: "亗", despues: "亗", letra: "script" },
-  { nombre: "Sonrisa ×͜×",          categoria: "gamer", antes: "×͜×", despues: "", letra: "versalitas" },
-  { nombre: "Ninja 么",            categoria: "gamer", antes: "么", despues: "", letra: "mono" },
-  { nombre: "Calavera",            categoria: "gamer", antes: "☠", despues: "☠", letra: "griego" },
-  { nombre: "Rayo",                categoria: "gamer", antes: "⚡", despues: "⚡", letra: "sansNegrita" },
-  { nombre: "Llamas tribales",     categoria: "gamer", antes: "༺", despues: "༻", letra: "sansCursiva" },
-  { nombre: "Ondas retro",         categoria: "gamer", antes: "•´¯`•.", despues: ".•´¯`•", letra: "cursiva" },
-  { nombre: "Francotirador",       categoria: "gamer", antes: "▄︻デ", despues: "══━一", letra: "sansNegrita" },
-  { nombre: "Estrellas reales",    categoria: "gamer", antes: "꧁☆", despues: "☆꧂", letra: "cursivaNegrita" },
-  { nombre: "Flor",                categoria: "gamer", antes: "✿", despues: "✿", letra: "burbujas" },
-  { nombre: "Corona",              categoria: "gamer", antes: "♛", despues: "♛", letra: "frakturNegrita" },
-  { nombre: "Guerrero 乂",          categoria: "gamer", antes: "乂", despues: "乂", letra: "asiatico" },
-  { nombre: "Pro",                 categoria: "gamer", antes: "ᴾᴿᴼ", despues: "", letra: "sansNegrita" },
-  { nombre: "Cruces",              categoria: "gamer", antes: "×", despues: "×", letra: "moneda" },
-  { nombre: "Flechas dobles",      categoria: "gamer", antes: "⫷", despues: "⫸", letra: "ruso" },
-  { nombre: "Triángulos",          categoria: "gamer", antes: "◥", despues: "◤", letra: "burbujasNegras" },
-
-  // Decorados
-  { nombre: "Destellos",           categoria: "decorados", antes: "✦ ", despues: " ✦", letra: "script" },
-  { nombre: "Corazones",           categoria: "decorados", antes: "♡ ", despues: " ♡", letra: "cursiva" },
-  { nombre: "Mariposa",            categoria: "decorados", antes: "ʚ ", despues: " ɞ", letra: "versalitas" },
-  { nombre: "Constelación",        categoria: "decorados", antes: "⋆｡°✩ ", despues: " ✩°｡⋆", letra: "scriptNegrita" },
-  { nombre: "Luna",                categoria: "decorados", antes: "☾ ", despues: " ☽", letra: "fraktur" },
-  { nombre: "Brillitos",           categoria: "decorados", antes: "✧･ﾟ: ", despues: " :･ﾟ✧", letra: "sans" },
-  { nombre: "Alas",                categoria: "decorados", antes: "˗ˏˋ ", despues: " ˎˊ˗", letra: "cursivaNegrita" },
-  { nombre: "Flores",              categoria: "decorados", antes: "❀ ", despues: " ❀", letra: "doble" },
-  { nombre: "Cuadro",              categoria: "decorados", antes: "〔", despues: "〕", letra: "mono" },
-  { nombre: "Rombos",              categoria: "decorados", antes: "◈ ", despues: " ◈", letra: "sansNegrita" },
-  { nombre: "Lazo",                categoria: "decorados", antes: "⊹₊ ", despues: " ₊⊹", letra: "versalitas" },
-  { nombre: "Música",              categoria: "decorados", antes: "♪♫ ", despues: " ♫♪", letra: "cursiva" },
-  { nombre: "Fuego",               categoria: "decorados", antes: "🔥 ", despues: " 🔥", letra: "frakturNegrita" },
-  { nombre: "Corona emoji",        categoria: "decorados", antes: "👑 ", despues: "", letra: "scriptNegrita" },
-  { nombre: "Diamante",            categoria: "decorados", antes: "💎 ", despues: " 💎", letra: "doble" },
-  { nombre: "Flecha de Cupido",    categoria: "decorados", antes: "➳ ", despues: " ♥", letra: "script" },
+const ESTILOS = [
+  { id: "negrita",            nombre: "Negrita",                    convertir: matematico(0x1D400, 0x1D41A, 0x1D7CE) },
+  { id: "cursiva",            nombre: "Cursiva",                    convertir: matematico(0x1D434, 0x1D44E, null, { h: "ℎ" }) },
+  { id: "negritaCursiva",     nombre: "Negrita cursiva",            convertir: matematico(0x1D468, 0x1D482, null) },
+  { id: "sans",               nombre: "Sin serifa",                 convertir: matematico(0x1D5A0, 0x1D5BA, 0x1D7E2) },
+  { id: "sansNegrita",        nombre: "Negrita sin serifa",         convertir: matematico(0x1D5D4, 0x1D5EE, 0x1D7EC) },
+  { id: "sansCursiva",        nombre: "Cursiva sin serifa",         convertir: matematico(0x1D608, 0x1D622, null) },
+  { id: "sansNegritaCursiva", nombre: "Negrita cursiva sin serifa", convertir: matematico(0x1D63C, 0x1D656, null) },
+  { id: "script",             nombre: "Caligráfica",                convertir: matematico(0x1D49C, 0x1D4B6, null, HUECOS_SCRIPT) },
+  { id: "scriptNegrita",      nombre: "Caligráfica negrita",        convertir: matematico(0x1D4D0, 0x1D4EA, null) },
+  { id: "fraktur",            nombre: "Gótica",                     convertir: matematico(0x1D504, 0x1D51E, null, HUECOS_FRAKTUR) },
+  { id: "frakturNegrita",     nombre: "Gótica negrita",             convertir: matematico(0x1D56C, 0x1D586, null) },
+  { id: "doble",              nombre: "Doble trazo",                convertir: matematico(0x1D538, 0x1D552, 0x1D7D8, HUECOS_DOBLE) },
+  { id: "mono",               nombre: "Monoespaciada",              convertir: matematico(0x1D670, 0x1D68A, 0x1D7F6) },
+  { id: "burbujas",           nombre: "Burbujas",                   convertir: encerrado(0x24B6, 0x24D0, Array.from("⓪①②③④⑤⑥⑦⑧⑨")) },
+  { id: "burbujasNegras",     nombre: "Burbujas negras",            convertir: encerrado(0x1F150, null, Array.from("⓿❶❷❸❹❺❻❼❽❾")) },
+  { id: "cuadrados",          nombre: "Cuadrados",                  convertir: encerrado(0x1F130, null, null) },
+  { id: "cuadradosNegros",    nombre: "Cuadrados negros",           convertir: encerrado(0x1F170, null, null) },
+  { id: "parentesis",         nombre: "Entre paréntesis",           convertir: encerrado(null, 0x249C, [null, ...Array.from("⑴⑵⑶⑷⑸⑹⑺⑻⑼")]) },
+  { id: "ancho",              nombre: "Ancho completo",             convertir: mapeador(ch => {
+      const c = ch.codePointAt(0);
+      if (c === 32) return "\u3000";
+      if (c >= 0x21 && c <= 0x7E) return String.fromCodePoint(c + 0xFEE0);
+      return null;
+    }) },
+  { id: "versalitas",         nombre: "Versalitas",                 convertir: tabla(zip(MIN, "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀꜱᴛᴜᴠᴡxʏᴢ")) },
+  { id: "superindice",        nombre: "Superíndice",                convertir: tabla(Object.assign(
+      zip(MIN, "ᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᵒᵖᑫʳˢᵗᵘᵛʷˣʸᶻ"),
+      zip(MAY, "ᴬᴮᶜᴰᴱᶠᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾᑫᴿˢᵀᵁⱽᵂˣʸᶻ"),
+      zip("0123456789+-=()", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾")
+    )) },
 ];
 
+/** Cambia mayúsculas o minúsculas antes de convertir, sin cambiar la longitud (ß se queda igual). */
+function seguroCaso(g, r) { return grafemas(r).length === 1 && r.length === g.length ? r : g; }
+function porGrafema(t, f) { return grafemas(t).map(g => seguroCaso(g, f(g))).join(""); }
+const MAYUSCULAS = {
+  original: { nombre: "Aa",    etiqueta: "Como lo escribes",                 fn: t => t },
+  mayus:    { nombre: "AA",    etiqueta: "Todo en mayúsculas",               fn: t => porGrafema(t, g => g.toUpperCase()) },
+  minus:    { nombre: "aa",    etiqueta: "Todo en minúsculas",               fn: t => porGrafema(t, g => g.toLowerCase()) },
+  titulo:   { nombre: "Aa Bb", etiqueta: "Mayúscula inicial en cada palabra", fn: t => {
+    let inicio = true;
+    return grafemas(t).map(g => {
+      const r = seguroCaso(g, inicio ? g.toUpperCase() : g.toLowerCase());
+      inicio = /\s/u.test(g);
+      return r;
+    }).join("");
+  } },
+};
+
 /* =========================================================
-   Lista declarativa de estilos { nombre, categoria, convertir }
+   Símbolos
    ========================================================= */
-const ESTILOS = [];
+// Solo caracteres asignados y visibles (sin controles, marcas sueltas ni espacios).
+const VISIBLE = /^[^\p{Cn}\p{Cc}\p{Cf}\p{Cs}\p{Co}\p{Mn}\p{Me}\p{Zs}\p{Zl}\p{Zp}]$/u;
 
-for (const m of MARCOS) {
-  const letra = LETRAS[m.letra];
-  ESTILOS.push({
-    nombre: `${m.nombre} · ${letra.nombre}`,
-    categoria: m.categoria,
-    convertir: t => m.antes + letra.fn(t) + m.despues,
-  });
+function rangos(...tramos) {
+  const out = [];
+  for (const [a, b] of tramos) {
+    for (let c = a; c <= b; c++) {
+      const s = String.fromCodePoint(c);
+      if (VISIBLE.test(s)) out.push(s);
+    }
+  }
+  return out;
 }
+const lista = s => Array.from(s.replace(/\s+/g, ""));
 
-for (const id of ["asiatico", "katakana", "griego", "ruso", "tailandes", "runico", "cherokee", "etiope", "moneda"]) {
-  ESTILOS.push({ nombre: LETRAS[id].nombre, categoria: "raras", convertir: LETRAS[id].fn });
-}
+const CATEGORIAS_SIMBOLOS = [
+  { id: "populares", nombre: "Populares", desc: "Los símbolos más usados en nicks, bios y mensajes.",
+    simbolos: lista(`★☆✦✧✩✪✯✰✿❀❁✾❃❄❅❆❤♥♡❥❣➳➵➸➺→←↑↓↔↕⇒⇐⇔➔✓✔✗✘☐☑☒☀☁☂☃☄☾☽☼♪♫♬♩♭♯
+      ☎☏✉✎✏✂✈⚡☠☢☣☮☯☪✝✡♔♕♖♗♘♙♚♛♜♝♞♟♠♣♦♧♤♢©®™℗℠§¶†‡•…‰∞≈≠≤≥±×÷√∑∏∫∆°℃℉€£¥¢$₿
+      ①②③❶❷❸Ⅰ½¼¾«»“”‹›¡¿‽※⁂❝❞✌☝☞☜☛☚⚜⚓⚔⚖⚙⚛⚠♻⌘⌛☕☺☹☻♀♂⚥`) },
+  { id: "recientes", nombre: "Usados recientemente", desc: "Los últimos símbolos que has usado en este navegador.", simbolos: [] },
+  { id: "estrellas", nombre: "Estrellas y flores", desc: "Estrellas, asteriscos, destellos y flores.",
+    simbolos: [...lista("★☆✶⋆⁎⁑⁂⍟⚝"), ...rangos([0x2721, 0x274B]), ...lista("⚘❦❧☙")] },
+  { id: "corazones", nombre: "Corazones", desc: "Corazones y adornos de amor.",
+    simbolos: lista("♡♥❤❥❣❦❧☙ღ❢ɞʚ") },
+  { id: "flechas", nombre: "Flechas", desc: "Flechas en todas las direcciones y estilos.",
+    simbolos: [...rangos([0x2190, 0x21FF], [0x27F0, 0x27FF], [0x2794, 0x27BF]), ...lista("⬅⬆⬇⬈⬉⬊⬋⬌⬍")] },
+  { id: "matematicos", nombre: "Matemáticos", desc: "Operadores, relaciones, conjuntos y lógica.",
+    simbolos: [...lista("+−×÷=≠±∓·√∛∜∞%‰‱°′″"), ...rangos([0x2200, 0x22FF])] },
+  { id: "monedas", nombre: "Monedas", desc: "Símbolos de divisas de todo el mundo.",
+    simbolos: [...lista("$¢£¤¥€₿"), ...rangos([0x20A0, 0x20BF])] },
+  { id: "numeros", nombre: "Números", desc: "Números en círculo, entre paréntesis, romanos, fracciones, superíndices y subíndices.",
+    simbolos: rangos([0x2460, 0x249B], [0x24EA, 0x24FF], [0x2776, 0x2793], [0x00BC, 0x00BE], [0x2150, 0x215F], [0x2189, 0x2189], [0x2160, 0x217F], [0x00B9, 0x00B9], [0x00B2, 0x00B3], [0x2070, 0x2070], [0x2074, 0x207E], [0x2080, 0x208E]) },
+  { id: "letras", nombre: "Letras encerradas", desc: "Letras dentro de círculos, cuadrados y paréntesis.",
+    simbolos: rangos([0x24B6, 0x24E9], [0x249C, 0x24B5], [0x1F130, 0x1F149], [0x1F150, 0x1F169], [0x1F170, 0x1F189]) },
+  { id: "tipograficos", nombre: "Tipográficos", desc: "Comillas, guiones, viñetas, marcas registradas y signos de texto.",
+    simbolos: [...lista("©®™℠℗§¶†‡•‣⁃◦∙…‰‱′″‴‹›«»“”‘’‚„¡¿‽⁇⁈⁉–—―‖¦※⁂⁕°№℡℅℀℁℆℞℟℣℧℮⌘⌥⇧⌫⏎❝❞❛❜〝〞〃"),
+      ...rangos([0x2100, 0x214F])] },
+  { id: "geometricos", nombre: "Formas geométricas", desc: "Cuadrados, círculos, triángulos, rombos y más.",
+    simbolos: rangos([0x25A0, 0x25FF], [0x2B12, 0x2B2F]) },
+  { id: "cuadros", nombre: "Cuadros y bloques", desc: "Líneas y bloques para dibujar marcos y arte de texto.",
+    simbolos: rangos([0x2500, 0x259F]) },
+  { id: "marcas", nombre: "Marcas y casillas", desc: "Visto bueno, cruces y casillas de verificación.",
+    simbolos: lista("✓✔☑✅✗✘✕✖☒☐⊠⊡⍻⎷√❌❎⭕⊗⊘⊕⊖") },
+  { id: "manos", nombre: "Manos y personas", desc: "Manos, gestos, caras y figuras.",
+    simbolos: lista("☚☛☜☝☞☟✌✍✋✊👍👎👌👋🤝🙏☺☻☹⚇⚆웃유〠♀♂⚥") },
+  { id: "ajedrez", nombre: "Ajedrez y juegos", desc: "Piezas de ajedrez, cartas, dados y fichas.",
+    simbolos: [...rangos([0x2654, 0x2667], [0x2680, 0x2689]), ...lista("⛀⛁⛂⛃")] },
+  { id: "musica", nombre: "Música", desc: "Notas y signos musicales.",
+    simbolos: [...rangos([0x2669, 0x266F]), ...lista("𝄞𝄢𝄡𝄪𝄫𝄐🎵🎶")] },
+  { id: "clima", nombre: "Clima y naturaleza", desc: "Sol, luna, nubes, lluvia, nieve y plantas.",
+    simbolos: lista("☀☁☂☃☄☇☈☉☼☽☾✶❄❅❆⛄⛅⛆⛈☔⚡☘✿❀⚘❦☙♨🌙🌞🌧🌨🌩🌪🌫🌬") },
+  { id: "zodiaco", nombre: "Zodiaco y astronomía", desc: "Signos del zodiaco, planetas y astros.",
+    simbolos: [...rangos([0x2648, 0x2653]), ...lista("⛎☉☽☾☿♀♁♂♃♄♅♆♇⚳⚴⚵⚶⚷⚸☊☋☌☍")] },
+  { id: "religion", nombre: "Religión y cultura", desc: "Cruces, estrellas y símbolos culturales.",
+    simbolos: lista("✝✞✟✠✙✚✛✜☦☧☨☩☪☫☬☭☮☯✡☸⚛⚕⚖⚚⚜☤⚱⚰☥⛤") },
+  { id: "tecnicos", nombre: "Técnicos y oficina", desc: "Teclado, oficina, herramientas y comunicación.",
+    simbolos: lista("✂✃✄✆✇✈✉✎✏✐✑✒☎☏⚒⚓⚔⚙⚗⚠⚡⛏⛓⌚⌛⏳⌨⌘⌥⇧⇪⌫⌦⏎⎋⏏⏩⏪⏫⏬⏭⏮⏯⏸⏹⏺⏰⏱⏲⌂⌀⌖⌗⏻⏼⏽⭘⎈⌬⍟⍰") },
+  { id: "griego", nombre: "Griego", desc: "Alfabeto griego en mayúsculas y minúsculas.",
+    simbolos: rangos([0x0391, 0x03A9], [0x03B1, 0x03C9], [0x03D1, 0x03D1], [0x03D5, 0x03D6], [0x03F5, 0x03F5]) },
+  { id: "varios", nombre: "Más símbolos", desc: "Todos los símbolos variados y dingbats de Unicode.",
+    simbolos: rangos([0x2600, 0x26FF], [0x2700, 0x27BF]) },
+  { id: "braille", nombre: "Braille", desc: "Patrones braille, útiles para arte de texto.",
+    simbolos: rangos([0x2800, 0x28FF]) },
+  { id: "kaomoji", nombre: "Emoticonos de texto", desc: "Caras hechas con caracteres (kaomoji).", anchos: true,
+    simbolos: ["( ͡° ͜ʖ ͡°)", "¯\\_(ツ)_/¯", "(╯°□°)╯︵ ┻━┻", "┬─┬ノ( º _ ºノ)", "ʕ•ᴥ•ʔ", "ʕ っ•ᴥ•ʔっ", "(ᵔᴥᵔ)",
+      "ಠ_ಠ", "(✿◠‿◠)", "(◕‿◕)", "(｡◕‿◕｡)", "(◠‿◠)", "(•‿•)", "(^_^)", "(^▽^)", "(≧▽≦)", "(*^‿^*)",
+      "(｡♥‿♥｡)", "(♥ω♥*)", "(づ｡◕‿‿◕｡)づ", "(っ˘ω˘ς )", "(ノ◕ヮ◕)ノ*:･ﾟ✧", "ヽ(•‿•)ノ", "\\(^o^)/",
+      "(¬‿¬)", "(¬_¬)", "(ಥ﹏ಥ)", "(T_T)", "(╥﹏╥)", "(ㆆ_ㆆ)", "(•_•)", "( •_•)>⌐■-■", "(⌐■_■)",
+      "(ง •̀_•́)ง", "(ó﹏ò｡)", "(⊙_⊙)", "(°ロ°)", "(o_O)", "(×_×)", "(-_-) zzZ", "(=^･ω･^=)",
+      "(=^･ｪ･^=)", "U・ᴥ・U", "▼・ᴥ・▼", "(｡•́︿•̀｡)", "(*≧ω≦*)", "(✧ω✧)", "♪(´▽｀)", "( ˘ ³˘)♥",
+      "(っ◔◡◔)っ ♥", "(ᵔ◡ᵔ)", "( ´ ▽ ` )ﾉ", "(＾▽＾)", "(ﾉ´ヮ`)ﾉ*: ･ﾟ", "<(￣︶￣)>", "(´• ω •`)",
+      "(•̀ᴗ•́)✧", "(☞ﾟヮﾟ)☞", "☜(ﾟヮﾟ☜)", "(◡‿◡✿)", "(✯◡✯)", "(￣ω￣)", "(°ー°〃)", "(｀・ω・´)"] },
+  { id: "separadores", nombre: "Separadores", desc: "Líneas decorativas para bios, mensajes y descripciones.", anchos: true,
+    simbolos: ["━━━━━━━━━━━━", "────────────", "════════════", "┈┈┈┈┈┈┈┈┈┈┈┈", "• • • • • • • •",
+      "✦ ━━━━━━━━ ✦", "⋆｡°✩ ━━━━ ✩°｡⋆", "❀ ── ❀ ── ❀", "✧･ﾟ: *✧･ﾟ:*", "﹏﹏﹏﹏﹏﹏", "～～～～～～",
+      "┏━━━━━━━━━┓", "┗━━━━━━━━━┛", "╔═════════╗", "╚═════════╝", "▬▬▬▬▬▬▬▬▬", "▀▄▀▄▀▄▀▄▀▄",
+      "⊱ ──────── ⊰", "◦•●◉✿ ✿◉●•◦", "·.·´¯`·.·★·.·´¯`·.·", "»»——————⍟——————««", "✧･ﾟ: ✧･ﾟ: ✧",
+      "★·.·´¯`·.·★", "─── ⋆⋅☆⋅⋆ ───", "•·.·''·.·•", "♡ ─────── ♡", "⟡ ━━━━━━ ⟡", "◈ ━━━━━━ ◈",
+      "▸▸▸▸▸▸▸▸", "◂◂◂◂◂◂◂◂", "≻───── ⋆✩⋆ ─────≺", "╰┈➤", "↳", "➥", "⤷", "✎﹏﹏﹏"] },
+];
+// Sin duplicados dentro de cada categoría.
+for (const c of CATEGORIAS_SIMBOLOS) c.simbolos = [...new Set(c.simbolos)];
 
-ESTILOS.push(
-  { nombre: "Glitch suave",         categoria: "efectos", convertir: zalgo("suave") },
-  { nombre: "Glitch medio",         categoria: "efectos", convertir: zalgo("medio") },
-  { nombre: "Glitch caótico",       categoria: "efectos", convertir: zalgo("caotico") },
-  { nombre: "Al revés",             categoria: "efectos", convertir: invertir(GIRO, GIRO_MARCAS) },
-  { nombre: "Espejo",               categoria: "efectos", convertir: invertir(ESPEJO, null) },
-  { nombre: "Tachado",              categoria: "efectos", convertir: conMarca("̶") },
-  { nombre: "Subrayado",            categoria: "efectos", convertir: conMarca("̲") },
-  { nombre: "Barra cruzada",        categoria: "efectos", convertir: conMarca("̸") },
-  { nombre: "Ondulado",             categoria: "efectos", convertir: conMarca("̰") },
-  { nombre: "Corazones entre letras", categoria: "efectos", convertir: entreLetras("♥") },
-  { nombre: "Estrellas entre letras", categoria: "efectos", convertir: entreLetras("★") },
-  { nombre: "Separado",             categoria: "efectos", convertir: entreLetras(" ", false, "   ") },
-  { nombre: "Chispas",              categoria: "efectos", convertir: entreLetras("✧", true) },
-  { nombre: "Alternas",             categoria: "efectos", convertir: alternas },
-);
-
-for (const id of ["fraktur", "frakturNegrita", "script", "scriptNegrita", "doble", "burbujas",
-                  "burbujasNegras", "cuadrados", "cuadradosNegros", "ancho", "versalitas",
-                  "superindice", "negrita", "cursiva", "cursivaNegrita", "sans", "sansNegrita",
-                  "sansCursiva", "mono"]) {
-  ESTILOS.push({ nombre: LETRAS[id].nombre, categoria: "basicos", convertir: LETRAS[id].fn });
-}
-
-const CATEGORIAS = [
+const FILTROS = [
   { id: "todos",     nombre: "Todos" },
-  { id: "gamer",     nombre: "Gamer" },
-  { id: "decorados", nombre: "Decorados" },
-  { id: "raras",     nombre: "Letras raras" },
-  { id: "efectos",   nombre: "Efectos" },
-  { id: "basicos",   nombre: "Básicos" },
   { id: "favoritos", nombre: "⭐ Favoritos" },
 ];
 
@@ -878,7 +724,7 @@ const CATEGORIAS = [
 if (typeof document !== "undefined") {
   const $ = sel => document.querySelector(sel);
   const input = $("#texto");
-  const lista = $("#lista");
+  const listaEl = $("#lista");
   const tabs = $("#tabs");
   const toastEl = $("#toast");
   const anuncio = $("#anuncio");
@@ -888,22 +734,24 @@ if (typeof document !== "undefined") {
   const TEXTO_EJEMPLO = "Draco";
   const MAX = 80;
   const LIMITES = [12, 16, 20, 32];
-  const CLAVE_TEMA = "generador-letras-tema";
-  const CLAVE_LIMITE = "generador-letras-limite";
-  const CLAVE_FAVS = "generador-letras-favoritos";
-  const movimientoReducido = () => window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-
+  const CLAVES = {
+    tema: "generador-letras-tema", limite: "generador-letras-limite", favs: "generador-letras-favoritos",
+    mayus: "generador-letras-mayus", recientes: "generador-letras-recientes", modo: "generador-letras-modo",
+  };
   const leer = clave => { try { return localStorage.getItem(clave); } catch (e) { return null; } };
   const guardar = (clave, valor) => { try { localStorage.setItem(clave, valor); } catch (e) { /* sin almacenamiento */ } };
+  const leerLista = clave => {
+    try { const v = JSON.parse(leer(clave) || "[]"); return Array.isArray(v) ? v.filter(x => typeof x === "string") : []; }
+    catch (e) { return []; }
+  };
 
-  let categoriaActual = "todos";
-  let combinacion = null; // { marco, letraId }
-  let limite = LIMITES.includes(+leer(CLAVE_LIMITE)) ? +leer(CLAVE_LIMITE) : 16;
-  let favoritos = new Set();
-  try { favoritos = new Set(JSON.parse(leer(CLAVE_FAVS) || "[]").filter(x => typeof x === "string")); } catch (e) { favoritos = new Set(); }
+  let filtroActual = "todos";
+  let limite = LIMITES.includes(+leer(CLAVES.limite)) ? +leer(CLAVES.limite) : 16;
+  let modoMayus = Object.prototype.hasOwnProperty.call(MAYUSCULAS, leer(CLAVES.mayus)) ? leer(CLAVES.mayus) : "original";
+  const favoritos = new Set(leerLista(CLAVES.favs));
 
   /* ---------- Limpieza de la entrada ---------- */
-  // Quita controles invisibles y órdenes de dirección (U+202E puede invertir el nick).
+  // Quita controles invisibles y órdenes de dirección (U+202E puede invertir el texto).
   const limpiar = t => t
     .replace(/[\r\n\t]+/g, " ")
     .replace(/[\u0000-\u001F\u007F-\u009F\u202A-\u202E\u2066-\u2069]/g, "");
@@ -929,7 +777,6 @@ if (typeof document !== "undefined") {
   }
   function anunciar(msg) {
     anuncio.textContent = "";
-    // Un pequeño retraso garantiza que el lector lo anuncie aunque el texto se repita.
     setTimeout(() => { anuncio.textContent = msg; }, 50);
   }
 
@@ -952,18 +799,20 @@ if (typeof document !== "undefined") {
     return ok;
   }
 
-  async function copiar(texto, boton, nombre) {
-    let ok = false;
+  async function copiarTexto(texto) {
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(texto);
-        ok = true;
+        return true;
       }
-    } catch (e) { ok = false; }
-    if (!ok) ok = copiarRespaldo(texto);
+    } catch (e) { /* se intenta el respaldo */ }
+    return copiarRespaldo(texto);
+  }
 
+  async function copiar(texto, boton, nombre) {
+    const ok = await copiarTexto(texto);
     if (ok) {
-      toast("✓ Copiado: " + texto, "Copiado el estilo " + nombre);
+      toast("✓ Copiado: " + texto, "Copiado " + nombre);
       if (boton) {
         boton.textContent = "✓ Copiado";
         boton.classList.add("done");
@@ -976,6 +825,7 @@ if (typeof document !== "undefined") {
     } else {
       toast("No se pudo copiar. Mantén pulsado el texto y elige Copiar (o Ctrl+C).");
     }
+    return ok;
   }
 
   /* ---------- Medidor ---------- */
@@ -990,26 +840,18 @@ if (typeof document !== "undefined") {
     } else {
       icono = "✓"; clase = "ok"; explicacion = `cabe en un límite de ${limite}`;
     }
-    el.textContent = `${icono} ${vis} ${vis === 1 ? "visible" : "visibles"}` + (u !== vis ? ` · ${u} u.` : "");
+    el.textContent = `${icono} ${vis} ${vis === 1 ? "letra" : "letras"}` + (u !== vis ? ` · ${u} u.` : "");
     el.className = "count " + clase;
     el.title = `${vis} caracteres visibles y ${u} unidades: ${explicacion}`;
     el.setAttribute("aria-label", el.title);
   }
 
   /* ---------- Tarjetas ---------- */
-  function seguro(est, t) {
-    try { return { ok: true, v: est.convertir(t) }; } catch (e) {
-      console.error(`Error en el estilo «${est.nombre}»:`, e);
-      return { ok: false, v: "" };
-    }
-  }
-
-  function guardarFavs() { guardar(CLAVE_FAVS, JSON.stringify([...favoritos])); }
+  function guardarFavs() { guardar(CLAVES.favs, JSON.stringify([...favoritos])); }
 
   const tarjetas = ESTILOS.map(est => {
     const card = document.createElement("article");
     card.className = "card";
-    card.dataset.cat = est.categoria;
 
     const top = document.createElement("div");
     top.className = "card-top";
@@ -1040,152 +882,129 @@ if (typeof document !== "undefined") {
     body.append(res, btn);
 
     card.append(top, body);
-    lista.appendChild(card);
+    listaEl.appendChild(card);
 
-    const t = { est, card, res, cnt, btn, fav, valor: null, ok: true };
+    const t = { est, card, res, cnt, btn, valor: "", ok: true };
     const pintarFav = () => {
-      const activo = favoritos.has(est.nombre);
+      const activo = favoritos.has(est.id);
       fav.textContent = activo ? "★" : "☆";
       fav.setAttribute("aria-pressed", activo ? "true" : "false");
     };
     pintarFav();
     fav.addEventListener("click", e => {
       e.stopPropagation();
-      if (favoritos.has(est.nombre)) favoritos.delete(est.nombre); else favoritos.add(est.nombre);
+      if (favoritos.has(est.id)) favoritos.delete(est.id); else favoritos.add(est.id);
       guardarFavs();
       pintarFav();
       actualizarNumFavs();
       filtrar();
-      anunciar(favoritos.has(est.nombre) ? "Añadido a favoritos" : "Quitado de favoritos");
+      anunciar(favoritos.has(est.id) ? "Añadido a favoritos" : "Quitado de favoritos");
     });
-    btn.addEventListener("click", e => { e.stopPropagation(); if (t.ok) copiar(t.valor, btn, est.nombre); });
+    btn.addEventListener("click", e => { e.stopPropagation(); if (t.ok) copiar(t.valor, btn, "el estilo " + est.nombre); });
     card.addEventListener("click", () => {
       const sel = window.getSelection ? String(window.getSelection()) : "";
       if (sel || !t.ok) return; // el usuario está seleccionando texto
-      copiar(t.valor, btn, est.nombre);
+      copiar(t.valor, btn, "el estilo " + est.nombre);
     });
     return t;
   });
 
   function textoActual() {
     // Solo espacios o caracteres invisibles cuentan como vacío.
-    const real = input.value.replace(/[\s\u200B-\u200D\u2060\uFEFFㅤ]/g, "");
+    const real = input.value.replace(/[\s\u200B-\u200D\u2060\uFEFF\u3164]/g, "");
     return real === "" ? TEXTO_EJEMPLO : input.value;
   }
 
   function render() {
-    const t = textoActual();
-    hint.hidden = t !== TEXTO_EJEMPLO || input.value.trim() === TEXTO_EJEMPLO;
+    const original = textoActual();
+    const t = MAYUSCULAS[modoMayus].fn(original);
+    hint.hidden = original !== TEXTO_EJEMPLO || input.value.trim() === TEXTO_EJEMPLO;
     for (const c of tarjetas) {
-      const r = seguro(c.est, t);
-      c.ok = r.ok;
-      const v = r.ok ? r.v : "No disponible";
+      let v, ok = true;
+      try { v = c.est.convertir(t); } catch (e) {
+        console.error(`Error en el estilo «${c.est.nombre}»:`, e);
+        ok = false;
+        v = "No disponible";
+      }
+      c.ok = ok;
       c.valor = v;
       c.res.textContent = v;
-      c.res.setAttribute("aria-label", r.ok ? `«${t}» con estilo ${c.est.nombre}` : "Estilo no disponible");
-      c.btn.disabled = !r.ok;
+      c.res.setAttribute("aria-label", ok ? `«${t}» en ${c.est.nombre.toLowerCase()}` : "Estilo no disponible");
+      c.btn.disabled = !ok;
       pintarContador(c.cnt, v);
     }
-    renderAleatorio();
   }
 
-  /* ---------- Aleatorio ---------- */
-  const randomCard = $("#randomCard");
-  const randomName = $("#randomName");
-  const randomResult = $("#randomResult");
-  const randomCount = $("#randomCount");
-  const randomCopy = $("#randomCopy");
-  let valorAleatorio = "";
-  let nombreAleatorio = "";
-  const IDS_LETRAS = Object.keys(LETRAS);
-  randomResult.setAttribute("role", "img");
-
-  function nuevaCombinacion() {
-    let nueva;
-    do {
-      nueva = {
-        marco: MARCOS[Math.floor(Math.random() * MARCOS.length)],
-        letraId: IDS_LETRAS[Math.floor(Math.random() * IDS_LETRAS.length)],
-      };
-    } while (combinacion && nueva.marco === combinacion.marco && nueva.letraId === combinacion.letraId);
-    combinacion = nueva;
-  }
-
-  function renderAleatorio() {
-    if (!combinacion) return;
-    const { marco, letraId } = combinacion;
-    const letra = LETRAS[letraId];
-    const t = textoActual();
-    valorAleatorio = marco.antes + letra.fn(t) + marco.despues;
-    nombreAleatorio = marco.nombre + " + " + letra.nombre;
-    randomName.textContent = "🎲 " + nombreAleatorio;
-    randomResult.textContent = valorAleatorio;
-    randomResult.setAttribute("aria-label", `«${t}» con estilo ${nombreAleatorio}`);
-    pintarContador(randomCount, valorAleatorio);
-    randomCard.hidden = false;
-  }
-
-  $("#aleatorio").addEventListener("click", () => {
-    nuevaCombinacion();
-    renderAleatorio();
-    anunciar("Combinación nueva: " + nombreAleatorio + ". " + randomCount.title);
-    randomCard.scrollIntoView({ behavior: movimientoReducido() ? "auto" : "smooth", block: "nearest" });
-  });
-  randomCopy.addEventListener("click", e => { e.stopPropagation(); copiar(valorAleatorio, randomCopy, nombreAleatorio); });
-  randomCard.addEventListener("click", () => {
-    if (window.getSelection && String(window.getSelection())) return;
-    copiar(valorAleatorio, randomCopy, nombreAleatorio);
-  });
-
-  /* ---------- Límite del juego ---------- */
-  const limiteBox = $("#limite");
-  const chips = LIMITES.map(n => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "chip";
-    b.textContent = n;
-    b.setAttribute("aria-label", `Límite de ${n} caracteres`);
-    b.addEventListener("click", () => {
-      limite = n;
-      guardar(CLAVE_LIMITE, String(n));
-      pintarChips();
-      render();
-      anunciar(`Límite de ${n} caracteres`);
+  /* ---------- Grupos de botones (límite, mayúsculas y modo) ---------- */
+  function grupoChips(contenedor, opciones, actual, alElegir) {
+    const botones = opciones.map(op => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip";
+      b.textContent = op.texto;
+      b.title = op.etiqueta;
+      if (op.texto !== op.etiqueta) b.setAttribute("aria-label", op.texto + ": " + op.etiqueta);
+      b.setAttribute("aria-pressed", op.valor === actual ? "true" : "false");
+      b.addEventListener("click", () => {
+        botones.forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+        alElegir(op.valor);
+        anunciar(op.etiqueta);
+      });
+      contenedor.appendChild(b);
+      return b;
     });
-    limiteBox.appendChild(b);
-    return b;
-  });
-  function pintarChips() {
-    chips.forEach((b, i) => b.setAttribute("aria-pressed", LIMITES[i] === limite ? "true" : "false"));
   }
 
-  /* ---------- Pestañas y buscador ---------- */
+  grupoChips($("#limite"), LIMITES.map(n => ({ valor: n, texto: String(n), etiqueta: `Límite de ${n} caracteres` })), limite, n => {
+    limite = n;
+    guardar(CLAVES.limite, String(n));
+    render();
+  });
+  grupoChips($("#mayus"), Object.entries(MAYUSCULAS).map(([k, m]) => ({ valor: k, texto: m.nombre, etiqueta: m.etiqueta })), modoMayus, k => {
+    modoMayus = k;
+    guardar(CLAVES.mayus, k);
+    render();
+  });
+
+  /* ---------- Navegación con flechas en pestañas (patrón ARIA) ---------- */
+  function teclasPestanas(contenedor, botones, elegir, vertical = false) {
+    contenedor.addEventListener("keydown", e => {
+      const visibles = botones().filter(b => !b.hidden);
+      const i = visibles.findIndex(b => b.getAttribute("aria-selected") === "true");
+      const sig = vertical ? ["ArrowDown", "ArrowRight"] : ["ArrowRight"];
+      const ant = vertical ? ["ArrowUp", "ArrowLeft"] : ["ArrowLeft"];
+      let j = null;
+      if (sig.includes(e.key)) j = (i + 1) % visibles.length;
+      else if (ant.includes(e.key)) j = (i - 1 + visibles.length) % visibles.length;
+      else if (e.key === "Home") j = 0;
+      else if (e.key === "End") j = visibles.length - 1;
+      if (j !== null && visibles.length) { e.preventDefault(); elegir(visibles[j]); visibles[j].focus(); }
+    });
+  }
+
+  /* ---------- Filtros y buscador de estilos ---------- */
   const sinTildes = s => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
-  const textoBusqueda = new Map(tarjetas.map(c => [c, sinTildes(c.est.nombre + " " + c.est.categoria)]));
   let numFavs = null;
 
-  const botonesTab = CATEGORIAS.map(cat => {
+  const botonesTab = FILTROS.map(f => {
     const b = document.createElement("button");
     b.type = "button";
     b.className = "tab";
-    b.id = "tab-" + cat.id;
+    b.id = "tab-" + f.id;
     b.setAttribute("role", "tab");
     b.setAttribute("aria-controls", "lista");
-    b.dataset.cat = cat.id;
-    const total = cat.id === "todos" ? ESTILOS.length
-      : cat.id === "favoritos" ? favoritos.size
-      : ESTILOS.filter(e => e.categoria === cat.id).length;
-    b.append(document.createTextNode(cat.nombre));
+    b.dataset.filtro = f.id;
+    b.append(document.createTextNode(f.nombre));
     const num = document.createElement("span");
     num.className = "num";
-    num.textContent = total;
-    if (cat.id === "favoritos") numFavs = num;
+    num.textContent = f.id === "todos" ? ESTILOS.length : favoritos.size;
+    if (f.id === "favoritos") numFavs = num;
     b.appendChild(num);
     const sr = document.createElement("span");
     sr.className = "sr-only";
     sr.textContent = " estilos";
     b.appendChild(sr);
-    b.addEventListener("click", () => seleccionar(cat.id));
+    b.addEventListener("click", () => seleccionarFiltro(f.id));
     tabs.appendChild(b);
     return b;
   });
@@ -1196,40 +1015,28 @@ if (typeof document !== "undefined") {
     const q = sinTildes(buscar.value.trim());
     let visibles = 0;
     for (const c of tarjetas) {
-      const enCategoria = categoriaActual === "todos" ||
-        (categoriaActual === "favoritos" ? favoritos.has(c.est.nombre) : c.est.categoria === categoriaActual);
-      const coincide = q === "" || q.split(/\s+/).every(p => textoBusqueda.get(c).includes(p));
-      c.card.hidden = !(enCategoria && coincide);
+      const enFiltro = filtroActual === "todos" || favoritos.has(c.est.id);
+      const coincide = q === "" || q.split(/\s+/).every(p => sinTildes(c.est.nombre).includes(p));
+      c.card.hidden = !(enFiltro && coincide);
       if (!c.card.hidden) visibles++;
     }
     vacio.hidden = visibles > 0;
-    vacio.textContent = categoriaActual === "favoritos" && favoritos.size === 0
+    vacio.textContent = filtroActual === "favoritos" && favoritos.size === 0
       ? "Aún no tienes favoritos: pulsa ☆ en cualquier estilo."
       : "No hay estilos que coincidan.";
   }
 
-  function seleccionar(id, enfocar = false) {
-    categoriaActual = id;
+  function seleccionarFiltro(id) {
+    filtroActual = id;
     for (const b of botonesTab) {
-      const activo = b.dataset.cat === id;
+      const activo = b.dataset.filtro === id;
       b.setAttribute("aria-selected", activo ? "true" : "false");
       b.tabIndex = activo ? 0 : -1;
-      if (activo && enfocar) b.focus();
     }
-    lista.setAttribute("aria-labelledby", "tab-" + id);
+    listaEl.setAttribute("aria-labelledby", "tab-" + id);
     filtrar();
   }
-
-  tabs.addEventListener("keydown", e => {
-    const i = botonesTab.findIndex(b => b.dataset.cat === categoriaActual);
-    let j = null;
-    if (e.key === "ArrowRight") j = (i + 1) % botonesTab.length;
-    else if (e.key === "ArrowLeft") j = (i - 1 + botonesTab.length) % botonesTab.length;
-    else if (e.key === "Home") j = 0;
-    else if (e.key === "End") j = botonesTab.length - 1;
-    if (j !== null) { e.preventDefault(); seleccionar(botonesTab[j].dataset.cat, true); }
-  });
-
+  teclasPestanas(tabs, () => botonesTab, b => seleccionarFiltro(b.dataset.filtro));
   buscar.addEventListener("input", filtrar);
 
   /* ---------- Entrada ---------- */
@@ -1264,19 +1071,150 @@ if (typeof document !== "undefined") {
     toast("Texto pegado");
   });
 
-  /* ---------- Compartir por enlace ---------- */
-  function leerHash() {
-    const m = /^#t=(.*)$/.exec(location.hash);
-    if (!m) return;
-    try { input.value = recortar(limpiar(decodeURIComponent(m[1])), MAX); } catch (e) { /* enlace mal formado */ }
-  }
   $("#compartir").addEventListener("click", async () => {
     const enlace = location.href.split("#")[0] + "#t=" + encodeURIComponent(textoActual());
     try { history.replaceState(null, "", enlace); } catch (e) { /* file:// en algunos navegadores */ }
-    let ok = false;
-    try { await navigator.clipboard.writeText(enlace); ok = true; } catch (e) { ok = copiarRespaldo(enlace); }
+    const ok = await copiarTexto(enlace);
     toast(ok ? "🔗 Enlace copiado: quien lo abra verá tu texto" : "No se pudo copiar el enlace");
   });
+
+  /* ---------- Símbolos ---------- */
+  const catsEl = $("#cats");
+  const grid = $("#grid");
+  const mitexto = $("#mitexto");
+  const buscarCat = $("#buscarCat");
+  let categoriaActual = "populares";
+  let gridPintado = false;
+  let modoSimbolo = leer(CLAVES.modo) === "anadir" ? "anadir" : "copiar";
+  let recientes = leerLista(CLAVES.recientes).filter(s => s.length <= 40).slice(0, 48);
+  const porId = Object.fromEntries(CATEGORIAS_SIMBOLOS.map(c => [c.id, c]));
+  porId.recientes.simbolos = recientes;
+
+  const botonesCat = CATEGORIAS_SIMBOLOS.map(c => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "cat";
+    b.id = "cat-" + c.id;
+    b.setAttribute("role", "tab");
+    b.setAttribute("aria-controls", "panelSym");
+    b.dataset.cat = c.id;
+    const nombre = document.createElement("span");
+    nombre.textContent = c.nombre;
+    const num = document.createElement("span");
+    num.className = "num";
+    num.textContent = c.simbolos.length;
+    b.append(nombre, num);
+    b.addEventListener("click", () => pintarCategoria(c.id));
+    catsEl.appendChild(b);
+    return b;
+  });
+  const numRecientes = botonesCat.find(b => b.dataset.cat === "recientes").querySelector(".num");
+  teclasPestanas(catsEl, () => botonesCat, b => pintarCategoria(b.dataset.cat), true);
+
+  const codigo = s => Array.from(s).map(ch => "U+" + ch.codePointAt(0).toString(16).toUpperCase().padStart(4, "0")).join(" ");
+
+  function pintarCategoria(id) {
+    categoriaActual = id;
+    gridPintado = true;
+    const cat = porId[id];
+    for (const b of botonesCat) {
+      const activa = b.dataset.cat === id;
+      b.setAttribute("aria-selected", activa ? "true" : "false");
+      b.tabIndex = activa ? 0 : -1;
+    }
+    $("#panelSym").setAttribute("aria-labelledby", "cat-" + id);
+    $("#symTitulo").textContent = cat.nombre;
+    $("#symDesc").textContent = cat.desc;
+    $("#symNum").textContent = cat.simbolos.length + (cat.simbolos.length === 1 ? " símbolo" : " símbolos");
+    grid.className = "grid" + (cat.anchos ? " anchos" : "");
+    const frag = document.createDocumentFragment();
+    for (const s of cat.simbolos) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "sym";
+      b.textContent = s;
+      b.dataset.s = s;
+      const etiqueta = cat.anchos ? s : `${s} ${codigo(s)}`;
+      b.title = etiqueta;
+      b.setAttribute("aria-label", etiqueta);
+      frag.appendChild(b);
+    }
+    grid.replaceChildren(frag);
+    const vacioSym = $("#symVacio");
+    vacioSym.hidden = cat.simbolos.length > 0;
+    vacioSym.textContent = id === "recientes" ? "Aún no has usado ningún símbolo." : "";
+  }
+
+  function usarReciente(s) {
+    recientes = [s, ...recientes.filter(x => x !== s)].slice(0, 48);
+    porId.recientes.simbolos = recientes;
+    guardar(CLAVES.recientes, JSON.stringify(recientes));
+    numRecientes.textContent = recientes.length;
+  }
+
+  grid.addEventListener("click", async e => {
+    const b = e.target.closest(".sym");
+    if (!b) return;
+    const s = b.dataset.s;
+    if (modoSimbolo === "anadir") {
+      const ini = mitexto.selectionStart != null ? mitexto.selectionStart : mitexto.value.length;
+      const fin = mitexto.selectionEnd != null ? mitexto.selectionEnd : mitexto.value.length;
+      mitexto.value = mitexto.value.slice(0, ini) + s + mitexto.value.slice(fin);
+      const pos = ini + s.length;
+      mitexto.setSelectionRange(pos, pos);
+      toast("＋ " + s, "Añadido " + b.getAttribute("aria-label"));
+    } else {
+      const ok = await copiarTexto(s);
+      if (!ok) { toast("No se pudo copiar. Mantén pulsado el símbolo y elige Copiar."); return; }
+      toast("✓ Copiado: " + s, "Copiado " + b.getAttribute("aria-label"));
+      b.classList.add("copiado");
+      setTimeout(() => b.classList.remove("copiado"), 900);
+    }
+    if (categoriaActual !== "recientes") usarReciente(s);
+  });
+
+  grupoChips($("#modo"), [
+    { valor: "copiar", texto: "📋 Copiar", etiqueta: "Se copia al portapapeles" },
+    { valor: "anadir", texto: "＋ Añadir a mi texto", etiqueta: "Se añade a tu texto" },
+  ], modoSimbolo, v => { modoSimbolo = v; guardar(CLAVES.modo, v); });
+
+  $("#copiarTexto").addEventListener("click", () => {
+    if (!mitexto.value) { toast("Escribe o añade símbolos primero"); return; }
+    copiar(mitexto.value, null, "tu texto");
+  });
+  $("#borrarTexto").addEventListener("click", () => { mitexto.value = ""; mitexto.focus(); anunciar("Texto borrado"); });
+
+  buscarCat.addEventListener("input", () => {
+    const q = sinTildes(buscarCat.value.trim());
+    let primera = null;
+    for (const b of botonesCat) {
+      const c = porId[b.dataset.cat];
+      b.hidden = !(q === "" || sinTildes(c.nombre + " " + c.desc).includes(q));
+      if (!b.hidden && !primera) primera = b;
+    }
+    const actual = botonesCat.find(b => b.dataset.cat === categoriaActual);
+    if (actual.hidden && primera) pintarCategoria(primera.dataset.cat);
+  });
+
+  /* ---------- Secciones (Letras / Símbolos) ---------- */
+  const secciones = [
+    { tab: $("#sec-letras"), panel: $("#panel-letras"), hash: "#letras" },
+    { tab: $("#sec-simbolos"), panel: $("#panel-simbolos"), hash: "#simbolos" },
+  ];
+  function mostrarSeccion(sec, cambiarHash = true) {
+    for (const s of secciones) {
+      const activa = s === sec;
+      s.tab.setAttribute("aria-selected", activa ? "true" : "false");
+      s.tab.tabIndex = activa ? 0 : -1;
+      s.panel.hidden = !activa;
+    }
+    if (sec.hash === "#simbolos" && !gridPintado) pintarCategoria(categoriaActual);
+    if (cambiarHash) {
+      try { history.replaceState(null, "", location.href.split("#")[0] + sec.hash); } catch (e) { /* sin historial */ }
+    }
+  }
+  secciones.forEach(s => s.tab.addEventListener("click", () => mostrarSeccion(s)));
+  teclasPestanas($("#secciones"), () => secciones.map(s => s.tab), b => mostrarSeccion(secciones.find(s => s.tab === b)));
 
   /* ---------- Tema ---------- */
   const temaBtn = $("#tema");
@@ -1286,22 +1224,25 @@ if (typeof document !== "undefined") {
     temaBtn.textContent = claro ? "🌙" : "☀️";
     temaBtn.setAttribute("aria-label", claro ? "Cambiar a modo oscuro" : "Cambiar a modo claro");
   }
-  const temaGuardado = leer(CLAVE_TEMA);
+  const temaGuardado = leer(CLAVES.tema);
   const sistemaClaro = window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches;
   aplicarTema(temaGuardado === "light" || temaGuardado === "dark" ? temaGuardado : (sistemaClaro ? "light" : "dark"));
   temaBtn.addEventListener("click", () => {
     const nuevo = document.documentElement.dataset.theme === "light" ? "dark" : "light";
     aplicarTema(nuevo);
-    guardar(CLAVE_TEMA, nuevo);
+    guardar(CLAVES.tema, nuevo);
   });
 
   /* ---------- Inicio ---------- */
-  leerHash();
-  pintarChips();
-  seleccionar("todos");
+  const enlace = /^#t=(.*)$/.exec(location.hash);
+  if (enlace) {
+    try { input.value = recortar(limpiar(decodeURIComponent(enlace[1])), MAX); } catch (e) { /* enlace mal formado */ }
+  }
+  seleccionarFiltro("todos");
   render();
-  // En el móvil no se abre el teclado al cargar.
-  if (!(window.matchMedia && matchMedia("(pointer: coarse)").matches)) input.focus();
+  const enSimbolos = location.hash === "#simbolos";
+  mostrarSeccion(enSimbolos ? secciones[1] : secciones[0], false);
+  if (!enSimbolos && !(window.matchMedia && matchMedia("(pointer: coarse)").matches)) input.focus();
 }
 </script>
 </body>

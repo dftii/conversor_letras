@@ -1,27 +1,32 @@
 # Generador de Letras
 
-Crea **nicks y textos con estilo** para Free Fire, Fortnite, PUBG, Roblox, Minecraft, COD, Discord, Instagram y TikTok. Escribes un nombre y ves al instante 80 versiones decoradas, listas para copiar.
+Convierte tu texto en **letras con estilo** y copia **miles de símbolos** con un clic. Úsalo en la web: <https://dftii.github.io/conversor_letras/>
 
-**Úsalo:** descarga `index.html` y ábrelo con doble clic. Es un único archivo, sin servidor, sin conexión y sin rastreo: no hace ninguna petición a internet.
+*dsgnd by dfti*
 
-## Lo que lo hace distinto
+## Letras
 
-- **Medidor honesto de longitud.** Otros generadores cuentan las letras que ves; los juegos suelen contar lo que el texto ocupa de verdad. Una letra «𝐍» se ve como 1, pero ocupa 2 unidades, y un Glitch de 5 letras puede ocupar 68. Cada resultado muestra las dos cifras y un semáforo frente al **límite de tu juego** (12, 16, 20 o 32): ✓ cabe · ⚠ se ve corto, pero ocupa más de lo permitido · ✕ demasiado largo.
-- **No rompe nada.** La ñ y las tildes se conservan, los emoji (👨‍👩‍👧, 🇪🇸, 1️⃣) pasan intactos, no se mezclan letras que se escriben de derecha a izquierda (que desordenan el nick) y lo que copias es exactamente lo que ves.
-- **Accesible:** se maneja con teclado, funciona con lectores de pantalla (anuncian «"Peña" con estilo Fraktur» en vez de deletrear símbolos), en modo de alto contraste y con buen contraste en ambos temas.
-- **Seguro:** política de seguridad de contenido (CSP) estricta, que bloquea cualquier script o conexión que no sea el propio archivo.
+21 estilos limpios, que funcionan en cualquier sitio que admita Unicode: negrita, cursiva, negrita cursiva, sin serifa (4 variantes), caligráfica, caligráfica negrita, gótica, gótica negrita, doble trazo, monoespaciada, burbujas, burbujas negras, cuadrados, cuadrados negros, entre paréntesis, ancho completo, versalitas y superíndice.
 
-## Funciones
+- **Mayúsculas:** como lo escribes, TODO MAYÚSCULAS, todo minúsculas o Tipo Título.
+- **Medidor honesto:** cada estilo muestra las letras que ves y las unidades que ocupa de verdad (𝐍 se ve como 1, pero ocupa 2). Elige el límite de tu juego o red (12, 16, 20 o 32) y verás si cabe.
+- La ñ, las tildes y los emoji se conservan siempre.
+- Buscador, ⭐ favoritos y 🔗 enlace para compartir tu texto (`#t=TuTexto`).
 
-- 80 estilos: Gamer (22 marcos tipo ꧁༒☬NICK☬༒꧂), Decorados (16), Letras raras (9), Efectos (14, con Glitch/Zalgo en 3 intensidades) y Básicos (19).
-- Buscador de estilos, ⭐ favoritos (se guardan en tu navegador) y 🎲 combinación aleatoria.
-- 🔗 Compartir: copia un enlace que abre la página con tu texto (`index.html#t=TuNick`).
-- Copiar con el botón o tocando la tarjeta; pegar con un botón.
-- Tema claro u oscuro según tu sistema, con interruptor.
+## Símbolos
 
-## En la web
+Más de 2.600 símbolos en 25 categorías: populares, estrellas y flores, corazones, flechas, matemáticos, monedas, números, letras encerradas, tipográficos, formas geométricas, cuadros y bloques, marcas y casillas, manos, ajedrez y juegos, música, clima, zodiaco, religión y cultura, técnicos, griego, braille, emoticonos de texto (kaomoji), separadores decorativos y más.
 
-Se publica sola en GitHub Pages con cada cambio en `main`, solo si pasan los tests: <https://dftii.github.io/conversor_letras/>.
+- Toca un símbolo para **copiarlo** o elige **«Añadir a mi texto»** para ir componiendo y copiar el resultado de una vez.
+- **Usados recientemente** guarda los últimos que has usado.
+- Abre directamente la sección con `#simbolos`.
+
+## Características
+
+- Un único archivo `index.html`, sin dependencias ni conexión: también funciona descargado y abierto con doble clic.
+- Sin rastreo: no hace ninguna petición a internet y lleva una política de seguridad (CSP) estricta.
+- Accesible: teclado completo, lectores de pantalla, modo de alto contraste y tema claro u oscuro según tu sistema.
+- Adaptada a móvil.
 
 ## Desarrollo
 
@@ -29,7 +34,7 @@ Se publica sola en GitHub Pages con cada cambio en `main`, solo si pasan los tes
 npm test
 ```
 
-No necesita instalar nada (solo Node 18 o superior). Comprueba los 80 estilos con 14 textos difíciles (ñ, vietnamita, emoji, banderas…), con y sin `Intl.Segmenter`, y que la CSP coincide con el código.
+No necesita instalar nada (solo Node 18 o superior). Comprueba los 21 estilos con textos difíciles (ñ, vietnamita, emoji, banderas…), con y sin `Intl.Segmenter`, todos los símbolos y que la CSP coincide con el código. Cada cambio en `main` se publica solo en GitHub Pages si pasan los tests.
 
 Si cambias el `<script>` o el `<style>`, actualiza los hashes de la CSP:
 
