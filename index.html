@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generador de Letras</title>
+<meta name="description" content="Crea nicks y textos con estilo para Free Fire, Fortnite, PUBG, Roblox, Minecraft, COD, Discord, Instagram y TikTok.">
+<style>
+  :root {
+    --bg: #0f0f14;
+    --card: #1a1a24;
+    --card-2: #23232f;
+    --border: #2a2a3a;
+    --text: #f2f2f7;
+    --muted: #9b9bb2;
+    --a1: #7c5cff;
+    --a2: #00d4ff;
+    --grad: linear-gradient(135deg, var(--a1), var(--a2));
+    --shadow: 0 4px 18px rgba(0, 0, 0, .35);
+    --glow: 0 10px 30px rgba(124, 92, 255, .30), 0 0 0 1px rgba(0, 212, 255, .25);
+    --ok: #3ddc97;
+    --warn: #ffc857;
+    --bad: #ff6b8a;
+    --focus: 0 0 0 3px rgba(0, 212, 255, .55);
+    --radius-card: 18px;
+    --radius-input: 20px;
+    --radius-pill: 999px;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --bg: #f4f4fa;
+    --card: #ffffff;
+    --card-2: #eeeef6;
+    --border: #e0e0ec;
+    --text: #17171f;
+    --muted: #64647a;
+    --shadow: 0 4px 16px rgba(20, 20, 50, .08);
+    --glow: 0 10px 28px rgba(124, 92, 255, .22), 0 0 0 1px rgba(0, 212, 255, .35);
+    --ok: #12a26a;
+    --warn: #b77900;
+    --bad: #d6335a;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+    overflow-x: hidden;
+    transition: background .2s, color .2s;
+  }
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* Cabecera */
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(1.9rem, 6vw, 2.6rem);
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .sub {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: .98rem;
+  }
+
+  /* Botones */
+  button { font: inherit; color: inherit; cursor: pointer; }
+  button:focus-visible, input:focus-visible, .card:focus-visible { outline: none; box-shadow: var(--focus); }
+  .btn {
+    border: 1px solid var(--border);
+    background: var(--card);
+    padding: 10px 18px;
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+    font-size: .95rem;
+    transition: transform .15s, box-shadow .15s, background .15s, border-color .15s;
+    white-space: nowrap;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: var(--glow); }
+  .btn:active { transform: translateY(0); }
+  .btn-grad {
+    background: var(--grad);
+    border-color: transparent;
+    color: #fff;
+  }
+  .theme-toggle {
+    flex: none;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    font-size: 1.2rem;
+  }
+
+  /* Entrada */
+  .input-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-input);
+    padding: 14px;
+    box-shadow: var(--shadow);
+  }
+  .field {
+    position: relative;
+  }
+  #texto {
+    width: 100%;
+    border: 2px solid transparent;
+    background: var(--card-2);
+    color: var(--text);
+    border-radius: var(--radius-input);
+    padding: 16px 20px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  #texto::placeholder { color: var(--muted); font-weight: 500; }
+  #texto:focus {
+    outline: none;
+    border-color: var(--a1);
+    box-shadow: 0 0 0 4px rgba(124, 92, 255, .22);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .actions .spacer { flex: 1; }
+  .hint {
+    margin: 12px 4px 0;
+    font-size: .85rem;
+    color: var(--muted);
+  }
+
+  /* Pestañas */
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 28px 0 8px;
+  }
+  .tab {
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
+    font-size: .92rem;
+    font-weight: 600;
+    transition: transform .15s, box-shadow .15s, color .15s;
+  }
+  .tab:hover { transform: translateY(-2px); color: var(--text); }
+  .tab[aria-selected="true"] {
+    background: var(--grad);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: var(--glow);
+  }
+  .tab .num { opacity: .75; font-weight: 500; margin-left: 4px; }
+  .legend {
+    margin: 4px 4px 18px;
+    font-size: .82rem;
+    color: var(--muted);
+  }
+  .legend b.ok { color: var(--ok); }
+  .legend b.warn { color: var(--warn); }
+  .legend b.bad { color: var(--bad); }
+
+  /* Tarjetas */
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 14px 16px 16px 20px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s, border-color .15s;
+    min-width: 0;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: var(--glow); }
+  .card[hidden] { display: none; }
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .name {
+    font-size: .8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+  }
+  .count {
+    flex: none;
+    font-size: .75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    background: var(--card-2);
+  }
+  .count.ok { color: var(--ok); }
+  .count.warn { color: var(--warn); }
+  .count.bad { color: var(--bad); }
+  .card-body {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .result {
+    flex: 1;
+    min-width: 0;
+    font-size: 1.55rem;
+    line-height: 1.6;
+    padding: 6px 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    overflow: hidden;
+    font-family: system-ui, -apple-system, "Segoe UI", "Segoe UI Symbol", "Segoe UI Emoji", "Noto Sans", "Noto Sans Symbols", "Noto Sans Symbols 2", "Noto Sans Math", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+  }
+  .copy {
+    flex: none;
+    min-width: 116px;
+  }
+  .copy.done {
+    background: var(--ok);
+    color: #fff;
+    border-color: transparent;
+  }
+
+  /* Aleatorio */
+  .random-card {
+    margin-top: 20px;
+    border: 2px solid transparent;
+    background:
+      linear-gradient(var(--card), var(--card)) padding-box,
+      var(--grad) border-box;
+  }
+  .random-card .name { color: var(--a2); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translate(-50%, 20px);
+    max-width: calc(100% - 32px);
+    background: var(--grad);
+    color: #fff;
+    font-weight: 600;
+    padding: 12px 22px;
+    border-radius: var(--radius-pill);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s, transform .2s;
+    overflow-wrap: anywhere;
+    text-align: center;
+    z-index: 10;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  footer {
+    margin-top: 40px;
+    text-align: center;
+    color: var(--muted);
+    font-size: .82rem;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 560px) {
+    .wrap { padding: 24px 16px 64px; }
+    .card { padding: 12px 14px 14px; }
+    .card-body { flex-direction: column; align-items: stretch; gap: 8px; }
+    .copy { width: 100%; }
+    .result { font-size: 1.35rem; }
+    .actions .btn { flex: 1 1 auto; }
+    .actions .spacer { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Generador de Letras</h1>
+      <p class="sub">Nicks y textos con estilo para Free Fire, Fortnite, PUBG, Roblox, Minecraft, COD, Discord, Instagram y TikTok.</p>
+    </div>
+    <button class="btn theme-toggle" id="tema" type="button" aria-label="Cambiar a modo claro" title="Cambiar tema">☀️</button>
+  </header>
+
+  <section class="input-box" aria-label="Texto a convertir">
+    <div class="field">
+      <label for="texto" class="sr-only">Tu nick o texto</label>
+      <input id="texto" type="text" placeholder="Escribe tu nick…" maxlength="80" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus>
+    </div>
+    <div class="actions">
+      <button class="btn" id="pegar" type="button" aria-label="Pegar texto desde el portapapeles">📋 Pegar</button>
+      <button class="btn" id="borrar" type="button" aria-label="Borrar el texto">✕ Borrar</button>
+      <span class="spacer"></span>
+      <button class="btn btn-grad" id="aleatorio" type="button" aria-label="Generar una combinación aleatoria de estilo y marco">🎲 Aleatorio</button>
+    </div>
+    <p class="hint" id="hint">Vista previa con «Draco». Escribe tu nombre para verlo con estilo.</p>
+  </section>
+
+  <article class="card random-card" id="randomCard" hidden tabindex="0" aria-label="Combinación aleatoria">
+    <div class="card-top">
+      <span class="name" id="randomName"></span>
+      <span class="count" id="randomCount"></span>
+    </div>
+    <div class="card-body">
+      <div class="result" id="randomResult"></div>
+      <button class="btn copy btn-grad" id="randomCopy" type="button" aria-label="Copiar la combinación aleatoria">Copiar</button>
+    </div>
+  </article>
+
+  <nav class="tabs" role="tablist" aria-label="Categorías de estilos" id="tabs"></nav>
+  <p class="legend">Contador de caracteres: <b class="ok">≤ 12</b> cabe en casi todos los juegos · <b class="warn">13-16</b> según el juego · <b class="bad">&gt; 16</b> demasiado largo para muchos.</p>
+
+  <main class="list" id="lista" aria-live="off"></main>
+
+  <footer>Toca cualquier tarjeta para copiar su texto.</footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   Utilidades de Unicode
+   ========================================================= */
+const ES_MARCA = /\p{M}/u;
+const ES_LETRA = /\p{L}/u;
+const ES_ESPACIO = /^\s+$/u;
+
+const segmentador = (typeof Intl !== "undefined" && Intl.Segmenter)
+  ? new Intl.Segmenter("es", { granularity: "grapheme" })
+  : null;
+
+/** Divide en grafemas (lo que el usuario ve como un carácter). */
+function grafemas(texto) {
+  if (segmentador) return Array.from(segmentador.segment(texto), s => s.segment);
+  // Respaldo: agrupa cada letra con sus marcas combinantes.
+  const res = [];
+  for (const ch of Array.from(texto)) {
+    if (ES_MARCA.test(ch) && res.length) res[res.length - 1] += ch;
+    else res.push(ch);
+  }
+  return res;
+}
+
+/** Cuenta los caracteres visibles. */
+function contar(texto) {
+  if (segmentador) {
+    let n = 0;
+    for (const _ of segmentador.segment(texto)) n++;
+    return n;
+  }
+  return Array.from(texto).length;
+}
+
+/**
+ * Crea un conversor letra a letra.
+ * Normaliza con NFD, convierte la letra base y conserva la marca combinante
+ * (así la ñ y las tildes no se pierden). Si no hay equivalente, deja el original.
+ */
+function mapeador(fn) {
+  return texto => {
+    let out = "";
+    for (const ch of Array.from(texto.normalize("NFD"))) {
+      if (ES_MARCA.test(ch)) { out += ch; continue; }
+      const r = fn(ch);
+      out += (r == null ? ch : r);
+    }
+    // Recompone lo que no se ha convertido (ñ, á...) para que se vea y cuente igual.
+    return out.normalize("NFC");
+  };
+}
+
+/** Bloque "Mathematical Alphanumeric Symbols" con sus huecos de "Letterlike Symbols". */
+function matematico(mayus, minus, digitos, huecos = {}) {
+  return mapeador(ch => {
+    if (huecos[ch]) return huecos[ch];
+    const c = ch.codePointAt(0);
+    if (c >= 65 && c <= 90 && mayus) return String.fromCodePoint(mayus + c - 65);
+    if (c >= 97 && c <= 122 && minus) return String.fromCodePoint(minus + c - 97);
+    if (c >= 48 && c <= 57 && digitos) return String.fromCodePoint(digitos + c - 48);
+    return null;
+  });
+}
+
+/** Alfabeto de sustitución de 26 letras (sin distinguir mayúsculas). */
+function sustitucion(alfabeto, digitos) {
+  const letras = Array.from(alfabeto);
+  const nums = digitos ? Array.from(digitos) : null;
+  if (letras.length !== 26) throw new Error("Alfabeto incompleto: " + alfabeto);
+  return mapeador(ch => {
+    if (/^[a-z]$/i.test(ch)) return letras[ch.toLowerCase().charCodeAt(0) - 97];
+    if (nums && /^[0-9]$/.test(ch)) return nums[+ch];
+    return null;
+  });
+}
+
+/** Tabla carácter a carácter. */
+function tabla(mapa) {
+  return mapeador(ch => (Object.prototype.hasOwnProperty.call(mapa, ch) ? mapa[ch] : null));
+}
+
+function zip(origen, destino) {
+  const a = Array.from(origen), b = Array.from(destino), m = {};
+  a.forEach((ch, i) => { if (b[i] !== undefined) m[ch] = b[i]; });
+  return m;
+}
+
+/* =========================================================
+   Estilos de letra (reutilizables por los marcos)
+   ========================================================= */
+const MIN = "abcdefghijklmnopqrstuvwxyz";
+const MAY = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+const LETRAS = {
+  negrita:        { nombre: "Negrita",             fn: matematico(0x1D400, 0x1D41A, 0x1D7CE) },
+  cursiva:        { nombre: "Cursiva",             fn: matematico(0x1D434, 0x1D44E, null, { h: "ℎ" }) },
+  cursivaNegrita: { nombre: "Cursiva negrita",     fn: matematico(0x1D468, 0x1D482, null) },
+  script:         { nombre: "Caligráfica",         fn: matematico(0x1D49C, 0x1D4B6, null, {
+                      B: "ℬ", E: "ℰ", F: "ℱ", H: "ℋ", I: "ℐ", L: "ℒ", M: "ℳ", R: "ℛ",
+                      e: "ℯ", g: "ℊ", o: "ℴ" }) },
+  scriptNegrita:  { nombre: "Caligráfica negrita", fn: matematico(0x1D4D0, 0x1D4EA, null) },
+  fraktur:        { nombre: "Fraktur",             fn: matematico(0x1D504, 0x1D51E, null, {
+                      C: "ℭ", H: "ℌ", I: "ℑ", R: "ℜ", Z: "ℨ" }) },
+  frakturNegrita: { nombre: "Fraktur negrita",     fn: matematico(0x1D56C, 0x1D586, null) },
+  doble:          { nombre: "Doble trazo",         fn: matematico(0x1D538, 0x1D552, 0x1D7D8, {
+                      C: "ℂ", H: "ℍ", N: "ℕ", P: "ℙ", Q: "ℚ", R: "ℝ", Z: "ℤ" }) },
+  sans:           { nombre: "Sin serifa",          fn: matematico(0x1D5A0, 0x1D5BA, 0x1D7E2) },
+  sansNegrita:    { nombre: "Negrita sin serifa",  fn: matematico(0x1D5D4, 0x1D5EE, 0x1D7EC) },
+  sansCursiva:    { nombre: "Cursiva sin serifa",  fn: matematico(0x1D608, 0x1D622, null) },
+  mono:           { nombre: "Monoespaciada",       fn: matematico(0x1D670, 0x1D68A, 0x1D7F6) },
+
+  burbujas: { nombre: "Burbujas", fn: mapeador(ch => {
+    const c = ch.codePointAt(0);
+    if (c >= 65 && c <= 90) return String.fromCodePoint(0x24B6 + c - 65);
+    if (c >= 97 && c <= 122) return String.fromCodePoint(0x24D0 + c - 97);
+    if (ch === "0") return "⓪";
+    if (c >= 49 && c <= 57) return String.fromCodePoint(0x2460 + c - 49);
+    return null;
+  }) },
+  burbujasNegras: { nombre: "Burbujas negras", fn: mapeador(ch => {
+    const c = ch.codePointAt(0);
+    if (c >= 65 && c <= 90) return String.fromCodePoint(0x1F150 + c - 65);
+    if (c >= 97 && c <= 122) return String.fromCodePoint(0x1F150 + c - 97);
+    if (ch === "0") return "⓿";
+    if (c >= 49 && c <= 57) return String.fromCodePoint(0x2776 + c - 49);
+    return null;
+  }) },
+  cuadrados: { nombre: "Cuadrados", fn: mapeador(ch => {
+    const c = ch.codePointAt(0);
+    if (c >= 65 && c <= 90) return String.fromCodePoint(0x1F130 + c - 65);
+    if (c >= 97 && c <= 122) return String.fromCodePoint(0x1F130 + c - 97);
+    return null;
+  }) },
+  cuadradosNegros: { nombre: "Cuadrados negros", fn: mapeador(ch => {
+    const c = ch.codePointAt(0);
+    if (c >= 65 && c <= 90) return String.fromCodePoint(0x1F170 + c - 65);
+    if (c >= 97 && c <= 122) return String.fromCodePoint(0x1F170 + c - 97);
+    return null;
+  }) },
+  ancho: { nombre: "Ancho completo", fn: mapeador(ch => {
+    const c = ch.codePointAt(0);
+    if (c === 32) return "　";
+    if (c >= 0x21 && c <= 0x7E) return String.fromCodePoint(c + 0xFEE0);
+    return null;
+  }) },
+  versalitas: { nombre: "Versalitas", fn: tabla(zip(MIN, "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀꜱᴛᴜᴠᴡxʏᴢ")) },
+  superindice: { nombre: "Superíndice", fn: tabla(Object.assign(
+    zip(MIN, "ᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᵒᵖᑫʳˢᵗᵘᵛʷˣʸᶻ"),
+    zip(MAY, "ᴬᴮᶜᴰᴱᶠᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾᑫᴿˢᵀᵁⱽᵂˣʸᶻ"),
+    zip("0123456789+-=()", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾")
+  )) },
+
+  // Letras raras (sustitución por caracteres parecidos)
+  asiatico: { nombre: "Asiático",         fn: sustitucion("卂乃匚刀乇下厶卄工丁长乚从𠘨口尸㔿尺丂丅凵リ山乂丫乙") },
+  katakana: { nombre: "Japonés katakana", fn: sustitucion("ﾑ乃ᄃりεｷムんﾉﾌズﾚﾶ刀のｱゐ尺丂ｲひ√wﾒﾘ乙") },
+  griego:   { nombre: "Griego",           fn: sustitucion("ΛßƇĐΣƑǤΉƗJҜLMИӨPQЯƧƬЦVЩXΨZ") },
+  ruso:     { nombre: "Ruso falso",       fn: sustitucion("ДБCDЁFGНIJКLМИОРQЯЅГЦVШХЧZ") },
+  tailandes:{ nombre: "Tailandés",        fn: sustitucion("ค๒ς๔єŦﻮђเןкɭ๓ภ๏קợгรՇยשฬאץչ") },
+  runico:   { nombre: "Rúnico medieval",  fn: sustitucion("ᚨᛒᚲᛞᛖᚠᚷᚺᛁᛃᚴᛚᛗᚾᛟᛈᛩᚱᛊᛏᚢᚡᚹᛪᚤᛉ") },
+  cherokee: { nombre: "Cherokee",         fn: sustitucion("ᗩᗷᑕᗪEᖴGᕼIᒍKᒪᗰᑎOᑭᑫᖇᔕTᑌᐯᗯ᙭Yᘔ") },
+  etiope:   { nombre: "Etíope",           fn: sustitucion("ልጌርዕቿቻኗዘጎጋጕረጠክዐየዒዪነፕሁሀሠሸሃጊ") },
+  moneda:   { nombre: "Moneda",           fn: sustitucion("₳฿₵ĐɆ₣₲ⱧłJ₭Ⱡ₥₦Ø₱QⱤ₴₮ɄV₩ӾɎⱫ") },
+};
+
+/* =========================================================
+   Efectos
+   ========================================================= */
+
+// Generador pseudoaleatorio con semilla (mulberry32) y hash FNV-1a del texto.
+function hashTexto(t) {
+  let h = 0x811C9DC5;
+  for (const ch of Array.from(t)) {
+    h ^= ch.codePointAt(0);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h >>> 0;
+}
+function prng(semilla) {
+  let a = semilla >>> 0;
+  return () => {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function rango(...tramos) {
+  const out = [];
+  for (const [a, b] of tramos) for (let c = a; c <= b; c++) out.push(String.fromCodePoint(c));
+  return out;
+}
+const ZALGO_ARRIBA = rango([0x0300, 0x0315], [0x033D, 0x0344], [0x0346, 0x0346], [0x034A, 0x034C],
+                           [0x0350, 0x0352], [0x0357, 0x0357], [0x035B, 0x035B], [0x0363, 0x036F]);
+const ZALGO_ABAJO  = rango([0x0316, 0x0319], [0x031C, 0x0333], [0x0339, 0x033C], [0x0345, 0x0345],
+                           [0x0347, 0x0349], [0x034D, 0x034E], [0x0353, 0x0356], [0x0359, 0x035A]);
+const ZALGO_MEDIO  = rango([0x0334, 0x0338]);
+
+const ZALGO_NIVELES = {
+  suave:   { arriba: [1, 1], abajo: [0, 1], medio: [0, 0] },
+  medio:   { arriba: [2, 3], abajo: [1, 2], medio: [0, 1] },
+  caotico: { arriba: [4, 8], abajo: [3, 6], medio: [1, 2] },
+};
+
+function zalgo(nivel) {
+  const cfg = ZALGO_NIVELES[nivel];
+  return texto => {
+    const t = texto.normalize("NFC");
+    const rnd = prng(hashTexto(nivel + "|" + t));
+    const entre = ([a, b]) => a + Math.floor(rnd() * (b - a + 1));
+    const elegir = lista => lista[Math.floor(rnd() * lista.length)];
+    let out = "";
+    for (const g of grafemas(t)) {
+      out += g;
+      if (ES_ESPACIO.test(g)) continue;
+      for (let i = entre(cfg.arriba); i > 0; i--) out += elegir(ZALGO_ARRIBA);
+      for (let i = entre(cfg.medio); i > 0; i--) out += elegir(ZALGO_MEDIO);
+      for (let i = entre(cfg.abajo); i > 0; i--) out += elegir(ZALGO_ABAJO);
+    }
+    return out;
+  };
+}
+
+// Al revés (girado 180°)
+const GIRO = Object.assign(
+  zip(MIN, "ɐqɔpǝɟƃɥᴉɾʞlɯuodbɹsʇnʌʍxʎz"),
+  zip(MAY, "∀ᗺƆᗡƎℲ⅁HIſʞ˥WNOԀΌᴚS⊥∩ΛMX⅄Z"),
+  zip("0123456789", "0ƖᄅƐㄣϛ9ㄥ86"),
+  { ".": "˙", ",": "'", "'": ",", "?": "¿", "¿": "?", "!": "¡", "¡": "!",
+    "(": ")", ")": "(", "[": "]", "]": "[", "{": "}", "}": "{", "<": ">", ">": "<",
+    "_": "‾", "&": "⅋", '"': "„", ";": "؛" }
+);
+// Las marcas de arriba pasan a estar debajo (la ñ sigue siendo reconocible).
+const GIRO_MARCAS = {
+  "̀": "̖", "́": "̗", "̃": "̰",
+  "̈": "̤", "̂": "̭", "̌": "̬", "̧": "̑",
+};
+
+const ESPEJO = Object.assign(
+  zip(MIN, "ɒdɔbɘʇϱʜiįʞlmnoqpɿƨƚuvwxγƹ"),
+  zip(MAY, "AᙠƆᗡƎᖷGHIႱK⅃MИOᑫQЯƧTUVWXYƸ"),
+  { "3": "Ɛ", "(": ")", ")": "(", "[": "]", "]": "[", "{": "}", "}": "{",
+    "<": ">", ">": "<", "?": "⸮", "/": "\\", "\\": "/" }
+);
+
+function invertir(mapaBase, mapaMarcas) {
+  return texto => grafemas(texto.normalize("NFC")).map(g => {
+    return Array.from(g.normalize("NFD")).map(ch => {
+      if (ES_MARCA.test(ch)) return (mapaMarcas && mapaMarcas[ch]) || ch;
+      return Object.prototype.hasOwnProperty.call(mapaBase, ch) ? mapaBase[ch] : ch;
+    }).join("");
+  }).reverse().join("");
+}
+
+function conMarca(marca) {
+  return texto => grafemas(texto.normalize("NFC"))
+    .map(g => (ES_ESPACIO.test(g) ? g : g + marca)).join("");
+}
+
+/** Une los grafemas de cada palabra con un separador. */
+function entreLetras(sep, borde = false, sepPalabras = null) {
+  return texto => {
+    const partes = texto.normalize("NFC").split(/(\s+)/u);
+    return partes.map(p => {
+      if (p === "") return "";
+      if (ES_ESPACIO.test(p)) return sepPalabras != null ? sepPalabras : p;
+      const g = grafemas(p).join(sep);
+      return borde ? sep + g + sep : g;
+    }).join("");
+  };
+}
+
+function alternas(texto) {
+  let i = 0;
+  return grafemas(texto.normalize("NFC")).map(g => {
+    if (!ES_LETRA.test(g)) return g;
+    return (i++ % 2 === 0) ? g.toLowerCase() : g.toUpperCase();
+  }).join("");
+}
+
+/* =========================================================
+   Marcos decorativos { antes, despues, letra }
+   ========================================================= */
+const MARCOS = [
+  // Gamer / Nicks
+  { nombre: "Leyenda",             categoria: "gamer", antes: "꧁༒☬", despues: "☬༒꧂", letra: "frakturNegrita" },
+  { nombre: "Clásico real",        categoria: "gamer", antes: "꧁", despues: "꧂", letra: "scriptNegrita" },
+  { nombre: "Estrella fugaz",      categoria: "gamer", antes: "★彡", despues: "彡★", letra: "negrita" },
+  { nombre: "Comillas japonesas",  categoria: "gamer", antes: "『", despues: "』", letra: "doble" },
+  { nombre: "Lenticular",          categoria: "gamer", antes: "【", despues: "】", letra: "ancho" },
+  { nombre: "Escudo",              categoria: "gamer", antes: "〖", despues: "〗", letra: "fraktur" },
+  { nombre: "Clan 亗",             categoria: "gamer", antes: "亗", despues: "亗", letra: "script" },
+  { nombre: "Sonrisa ×͜×",          categoria: "gamer", antes: "×͜×", despues: "", letra: "versalitas" },
+  { nombre: "Ninja 么",            categoria: "gamer", antes: "么", despues: "", letra: "mono" },
+  { nombre: "Calavera",            categoria: "gamer", antes: "☠", despues: "☠", letra: "griego" },
+  { nombre: "Rayo",                categoria: "gamer", antes: "⚡", despues: "⚡", letra: "sansNegrita" },
+  { nombre: "Llamas tribales",     categoria: "gamer", antes: "༺", despues: "༻", letra: "sansCursiva" },
+  { nombre: "Ondas retro",         categoria: "gamer", antes: "•´¯`•.", despues: ".•´¯`•", letra: "cursiva" },
+  { nombre: "Francotirador",       categoria: "gamer", antes: "▄︻デ", despues: "══━一", letra: "sansNegrita" },
+  { nombre: "Estrellas reales",    categoria: "gamer", antes: "꧁☆", despues: "☆꧂", letra: "cursivaNegrita" },
+  { nombre: "Flor",                categoria: "gamer", antes: "✿", despues: "✿", letra: "burbujas" },
+  { nombre: "Corona",              categoria: "gamer", antes: "♛", despues: "♛", letra: "frakturNegrita" },
+  { nombre: "Guerrero 乂",          categoria: "gamer", antes: "乂", despues: "乂", letra: "asiatico" },
+  { nombre: "Pro",                 categoria: "gamer", antes: "ᴾᴿᴼ", despues: "", letra: "sansNegrita" },
+  { nombre: "Cruces",              categoria: "gamer", antes: "×", despues: "×", letra: "moneda" },
+  { nombre: "Flechas dobles",      categoria: "gamer", antes: "⫷", despues: "⫸", letra: "ruso" },
+  { nombre: "Triángulos",          categoria: "gamer", antes: "◥", despues: "◤", letra: "burbujasNegras" },
+
+  // Decorados
+  { nombre: "Destellos",           categoria: "decorados", antes: "✦ ", despues: " ✦", letra: "script" },
+  { nombre: "Corazones",           categoria: "decorados", antes: "♡ ", despues: " ♡", letra: "cursiva" },
+  { nombre: "Mariposa",            categoria: "decorados", antes: "ʚ ", despues: " ɞ", letra: "versalitas" },
+  { nombre: "Constelación",        categoria: "decorados", antes: "⋆｡°✩ ", despues: " ✩°｡⋆", letra: "scriptNegrita" },
+  { nombre: "Luna",                categoria: "decorados", antes: "☾ ", despues: " ☽", letra: "fraktur" },
+  { nombre: "Brillitos",           categoria: "decorados", antes: "✧･ﾟ: ", despues: " :･ﾟ✧", letra: "sans" },
+  { nombre: "Alas",                categoria: "decorados", antes: "˗ˏˋ ", despues: " ˎˊ˗", letra: "cursivaNegrita" },
+  { nombre: "Flores",              categoria: "decorados", antes: "❀ ", despues: " ❀", letra: "doble" },
+  { nombre: "Cuadro",              categoria: "decorados", antes: "〔", despues: "〕", letra: "mono" },
+  { nombre: "Rombos",              categoria: "decorados", antes: "◈ ", despues: " ◈", letra: "sansNegrita" },
+  { nombre: "Lazo",                categoria: "decorados", antes: "⊹₊ ", despues: " ₊⊹", letra: "versalitas" },
+  { nombre: "Música",              categoria: "decorados", antes: "♪♫ ", despues: " ♫♪", letra: "cursiva" },
+  { nombre: "Fuego",               categoria: "decorados", antes: "🔥 ", despues: " 🔥", letra: "frakturNegrita" },
+  { nombre: "Corona emoji",        categoria: "decorados", antes: "👑 ", despues: "", letra: "scriptNegrita" },
+  { nombre: "Diamante",            categoria: "decorados", antes: "💎 ", despues: " 💎", letra: "doble" },
+  { nombre: "Flecha de Cupido",    categoria: "decorados", antes: "➳ ", despues: " ♥", letra: "script" },
+];
+
+/* =========================================================
+   Lista declarativa de estilos { nombre, categoria, convertir }
+   ========================================================= */
+const ESTILOS = [];
+
+for (const m of MARCOS) {
+  const letra = LETRAS[m.letra];
+  ESTILOS.push({
+    nombre: `${m.nombre} · ${letra.nombre}`,
+    categoria: m.categoria,
+    convertir: t => m.antes + letra.fn(t) + m.despues,
+  });
+}
+
+for (const id of ["asiatico", "katakana", "griego", "ruso", "tailandes", "runico", "cherokee", "etiope", "moneda"]) {
+  ESTILOS.push({ nombre: LETRAS[id].nombre, categoria: "raras", convertir: LETRAS[id].fn });
+}
+
+ESTILOS.push(
+  { nombre: "Glitch suave",         categoria: "efectos", convertir: zalgo("suave") },
+  { nombre: "Glitch medio",         categoria: "efectos", convertir: zalgo("medio") },
+  { nombre: "Glitch caótico",       categoria: "efectos", convertir: zalgo("caotico") },
+  { nombre: "Al revés",             categoria: "efectos", convertir: invertir(GIRO, GIRO_MARCAS) },
+  { nombre: "Espejo",               categoria: "efectos", convertir: invertir(ESPEJO, null) },
+  { nombre: "Tachado",              categoria: "efectos", convertir: conMarca("̶") },
+  { nombre: "Subrayado",            categoria: "efectos", convertir: conMarca("̲") },
+  { nombre: "Barra cruzada",        categoria: "efectos", convertir: conMarca("̸") },
+  { nombre: "Ondulado",             categoria: "efectos", convertir: conMarca("̰") },
+  { nombre: "Corazones entre letras", categoria: "efectos", convertir: entreLetras("♥") },
+  { nombre: "Estrellas entre letras", categoria: "efectos", convertir: entreLetras("★") },
+  { nombre: "Separado",             categoria: "efectos", convertir: entreLetras(" ", false, "   ") },
+  { nombre: "Chispas",              categoria: "efectos", convertir: entreLetras("✧", true) },
+  { nombre: "Alternas",             categoria: "efectos", convertir: alternas },
+);
+
+for (const id of ["fraktur", "frakturNegrita", "script", "scriptNegrita", "doble", "burbujas",
+                  "burbujasNegras", "cuadrados", "cuadradosNegros", "ancho", "versalitas",
+                  "superindice", "negrita", "cursiva", "cursivaNegrita", "sans", "sansNegrita",
+                  "sansCursiva", "mono"]) {
+  ESTILOS.push({ nombre: LETRAS[id].nombre, categoria: "basicos", convertir: LETRAS[id].fn });
+}
+
+const CATEGORIAS = [
+  { id: "todos",     nombre: "Todos" },
+  { id: "gamer",     nombre: "Gamer" },
+  { id: "decorados", nombre: "Decorados" },
+  { id: "raras",     nombre: "Letras raras" },
+  { id: "efectos",   nombre: "Efectos" },
+  { id: "basicos",   nombre: "Básicos" },
+];
+
+/* =========================================================
+   Interfaz
+   ========================================================= */
+if (typeof document !== "undefined") {
+  const $ = sel => document.querySelector(sel);
+  const input = $("#texto");
+  const lista = $("#lista");
+  const tabs = $("#tabs");
+  const toastEl = $("#toast");
+  const hint = $("#hint");
+  const TEXTO_EJEMPLO = "Draco";
+
+  let categoriaActual = "todos";
+  let combinacion = null; // { marco, letraId }
+
+  /* ---------- Copiar ---------- */
+  function copiarRespaldo(texto) {
+    const ta = document.createElement("textarea");
+    ta.value = texto;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.top = "-1000px";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length);
+    let ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  async function copiar(texto, boton) {
+    let ok = false;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(texto);
+        ok = true;
+      }
+    } catch (e) { ok = false; }
+    if (!ok) ok = copiarRespaldo(texto);
+
+    if (ok) {
+      toast("✓ Copiado: " + texto);
+      if (boton) {
+        boton.textContent = "✓ Copiado";
+        boton.classList.add("done");
+        clearTimeout(boton._t);
+        boton._t = setTimeout(() => {
+          boton.textContent = "Copiar";
+          boton.classList.remove("done");
+        }, 1500);
+      }
+    } else {
+      toast("No se pudo copiar. Selecciona el texto y pulsa Ctrl+C");
+    }
+  }
+
+  let toastT = null;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastT);
+    toastT = setTimeout(() => toastEl.classList.remove("show"), 2000);
+  }
+
+  /* ---------- Contador ---------- */
+  function pintarContador(el, texto) {
+    const n = contar(texto);
+    el.textContent = n + (n === 1 ? " carácter" : " caracteres");
+    el.className = "count " + (n <= 12 ? "ok" : n <= 16 ? "warn" : "bad");
+    el.title = "Muchos juegos limitan el nick a unos 12-16 caracteres";
+  }
+
+  /* ---------- Tarjetas ---------- */
+  function seguro(fn, t) {
+    try { return fn(t); } catch (e) { return t; }
+  }
+
+  const tarjetas = ESTILOS.map((est, i) => {
+    const card = document.createElement("article");
+    card.className = "card";
+    card.dataset.cat = est.categoria;
+
+    const top = document.createElement("div");
+    top.className = "card-top";
+    const nombre = document.createElement("span");
+    nombre.className = "name";
+    nombre.textContent = est.nombre;
+    const cnt = document.createElement("span");
+    cnt.className = "count";
+    top.append(nombre, cnt);
+
+    const body = document.createElement("div");
+    body.className = "card-body";
+    const res = document.createElement("div");
+    res.className = "result";
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn copy";
+    btn.textContent = "Copiar";
+    btn.setAttribute("aria-label", "Copiar estilo " + est.nombre);
+    body.append(res, btn);
+
+    card.append(top, body);
+    lista.appendChild(card);
+
+    const t = { est, card, res, cnt, btn, valor: null };
+    btn.addEventListener("click", e => { e.stopPropagation(); copiar(t.valor, btn); });
+    card.addEventListener("click", () => {
+      const sel = window.getSelection ? String(window.getSelection()) : "";
+      if (sel) return; // el usuario está seleccionando texto
+      copiar(t.valor, btn);
+    });
+    return t;
+  });
+
+  function textoActual() {
+    return input.value.trim() === "" ? TEXTO_EJEMPLO : input.value;
+  }
+
+  function render() {
+    const t = textoActual();
+    hint.hidden = input.value.trim() !== "";
+    for (const c of tarjetas) {
+      const v = seguro(c.est.convertir, t);
+      if (v === c.valor) continue;
+      c.valor = v;
+      c.res.textContent = v;
+      pintarContador(c.cnt, v);
+    }
+    renderAleatorio();
+  }
+
+  /* ---------- Aleatorio ---------- */
+  const randomCard = $("#randomCard");
+  const randomName = $("#randomName");
+  const randomResult = $("#randomResult");
+  const randomCount = $("#randomCount");
+  const randomCopy = $("#randomCopy");
+  let valorAleatorio = "";
+  const IDS_LETRAS = Object.keys(LETRAS);
+
+  function nuevaCombinacion() {
+    let nueva;
+    do {
+      nueva = {
+        marco: MARCOS[Math.floor(Math.random() * MARCOS.length)],
+        letraId: IDS_LETRAS[Math.floor(Math.random() * IDS_LETRAS.length)],
+      };
+    } while (combinacion && nueva.marco === combinacion.marco && nueva.letraId === combinacion.letraId);
+    combinacion = nueva;
+  }
+
+  function renderAleatorio() {
+    if (!combinacion) return;
+    const { marco, letraId } = combinacion;
+    const letra = LETRAS[letraId];
+    valorAleatorio = marco.antes + seguro(letra.fn, textoActual()) + marco.despues;
+    randomName.textContent = "🎲 " + marco.nombre + " + " + letra.nombre;
+    randomResult.textContent = valorAleatorio;
+    pintarContador(randomCount, valorAleatorio);
+    randomCard.hidden = false;
+  }
+
+  $("#aleatorio").addEventListener("click", () => {
+    nuevaCombinacion();
+    renderAleatorio();
+    randomCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+  randomCopy.addEventListener("click", e => { e.stopPropagation(); copiar(valorAleatorio, randomCopy); });
+  randomCard.addEventListener("click", () => {
+    if (window.getSelection && String(window.getSelection())) return;
+    copiar(valorAleatorio, randomCopy);
+  });
+  randomCard.addEventListener("keydown", e => {
+    if ((e.key === "Enter" || e.key === " ") && e.target === randomCard) {
+      e.preventDefault();
+      copiar(valorAleatorio, randomCopy);
+    }
+  });
+
+  /* ---------- Pestañas ---------- */
+  const botonesTab = CATEGORIAS.map(cat => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "tab";
+    b.setAttribute("role", "tab");
+    b.dataset.cat = cat.id;
+    const total = cat.id === "todos" ? ESTILOS.length : ESTILOS.filter(e => e.categoria === cat.id).length;
+    b.innerHTML = "";
+    b.append(document.createTextNode(cat.nombre));
+    const num = document.createElement("span");
+    num.className = "num";
+    num.textContent = total;
+    b.appendChild(num);
+    b.setAttribute("aria-label", `${cat.nombre}: ${total} estilos`);
+    b.setAttribute("aria-controls", "lista");
+    b.addEventListener("click", () => seleccionar(cat.id));
+    tabs.appendChild(b);
+    return b;
+  });
+
+  function seleccionar(id, enfocar = false) {
+    categoriaActual = id;
+    for (const b of botonesTab) {
+      const activo = b.dataset.cat === id;
+      b.setAttribute("aria-selected", activo ? "true" : "false");
+      b.tabIndex = activo ? 0 : -1;
+      if (activo && enfocar) b.focus();
+    }
+    for (const c of tarjetas) c.card.hidden = !(id === "todos" || c.est.categoria === id);
+  }
+
+  tabs.addEventListener("keydown", e => {
+    const i = botonesTab.findIndex(b => b.dataset.cat === categoriaActual);
+    let j = null;
+    if (e.key === "ArrowRight") j = (i + 1) % botonesTab.length;
+    else if (e.key === "ArrowLeft") j = (i - 1 + botonesTab.length) % botonesTab.length;
+    else if (e.key === "Home") j = 0;
+    else if (e.key === "End") j = botonesTab.length - 1;
+    if (j !== null) { e.preventDefault(); seleccionar(botonesTab[j].dataset.cat, true); }
+  });
+
+  /* ---------- Entrada ---------- */
+  input.addEventListener("input", render);
+
+  $("#borrar").addEventListener("click", () => {
+    input.value = "";
+    render();
+    input.focus();
+  });
+
+  $("#pegar").addEventListener("click", async () => {
+    try {
+      if (!navigator.clipboard || !navigator.clipboard.readText) throw new Error("sin acceso");
+      const t = await navigator.clipboard.readText();
+      input.value = t.replace(/[\r\n]+/g, " ").slice(0, input.maxLength > 0 ? input.maxLength : 80);
+      render();
+      input.focus();
+      toast(t ? "Texto pegado" : "El portapapeles está vacío");
+    } catch (e) {
+      input.focus();
+      toast("Pulsa Ctrl+V para pegar");
+    }
+  });
+
+  /* ---------- Tema ---------- */
+  const temaBtn = $("#tema");
+  function aplicarTema(tema) {
+    document.documentElement.dataset.theme = tema;
+    const claro = tema === "light";
+    temaBtn.textContent = claro ? "🌙" : "☀️";
+    temaBtn.setAttribute("aria-label", claro ? "Cambiar a modo oscuro" : "Cambiar a modo claro");
+  }
+  let temaGuardado = null;
+  try { temaGuardado = localStorage.getItem("generador-letras-tema"); } catch (e) { temaGuardado = null; }
+  aplicarTema(temaGuardado === "light" ? "light" : "dark");
+  temaBtn.addEventListener("click", () => {
+    const nuevo = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    aplicarTema(nuevo);
+    try { localStorage.setItem("generador-letras-tema", nuevo); } catch (e) { /* sin almacenamiento */ }
+  });
+
+  /* ---------- Inicio ---------- */
+  seleccionar("todos");
+  render();
+  input.focus();
+}
+</script>
+</body>
+</html>
