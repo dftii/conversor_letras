@@ -19,9 +19,9 @@ Crea **nicks y textos con estilo** para Free Fire, Fortnite, PUBG, Roblox, Minec
 - Copiar con el botón o tocando la tarjeta; pegar con un botón.
 - Tema claro u oscuro según tu sistema, con interruptor.
 
-## Publicarlo en la web
+## En la web
 
-En GitHub: *Settings → Pages → Deploy from a branch → `main` / root*. La página quedará en `https://<usuario>.github.io/<repositorio>/`.
+Se publica sola en GitHub Pages con cada cambio en `main`, solo si pasan los tests: <https://dftii.github.io/conversor_letras/>.
 
 ## Desarrollo
 
@@ -36,3 +36,7 @@ Si cambias el `<script>` o el `<style>`, actualiza los hashes de la CSP:
 ```bash
 npm run csp
 ```
+
+## Licencia
+
+[MIT](LICENSE): puedes usarlo, modificarlo y compartirlo libremente, manteniendo el aviso de copyright.
